@@ -39,7 +39,7 @@ const HomeProducts = () => {
 
   return (
     <div className="flex flex-col items-center pt-14">
-      <p className="text-2xl font-medium text-left w-full">Home products</p>
+      <p className="text-2xl font-medium text-left w-full">Popular Products</p>
       {/* Mobile grid: custom card style */}
       <div className="w-full">
         <div className="grid grid-cols-2 gap-2 md:hidden pb-14 mt-6">
