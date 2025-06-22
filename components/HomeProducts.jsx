@@ -7,22 +7,18 @@ import axios from 'axios';
 const HomeProducts = () => {
   const { router } = useAppContext();
   const [loading, setLoading] = useState(true);
-  const [popularProducts, setPopularProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPopularProducts = async () => {
+    const fetchProducts = async () => {
       try {
         setLoading(true);
         const { data } = await axios.get('/api/product/list', {
-          params: { limit: 100 }
+          params: { limit: 10 }
         });
         if (data.success) {
-          // Filter for popular products and take only the top 10
-          const popular = data.products
-            .filter(product => product.isPopular === true)
-            .slice(0, 10);
-          setPopularProducts(popular);
+          setProducts(data.products);
         } else {
           setError(data.message || 'Failed to fetch products');
         }
@@ -32,21 +28,23 @@ const HomeProducts = () => {
         setLoading(false);
       }
     };
-    fetchPopularProducts();
+    fetchProducts();
   }, []);
 
   if (loading) return <Loading />;
-  if (error || !popularProducts.length) return null;
+  if (error || !products.length) return null;
+
+  // Ensure only 10 products are shown
+  const displayProducts = products.slice(0, 10);
 
   return (
     <div className="flex flex-col items-center pt-14">
-      <p className="text-2xl font-medium text-left w-full">Popular products</p>
+      <p className="text-2xl font-medium text-left w-full">Home products</p>
       {/* Mobile grid: custom card style */}
       <div className="w-full">
         <div className="grid grid-cols-2 gap-2 md:hidden pb-14 mt-6">
-          {popularProducts.map((product, index) => {
+          {displayProducts.map((product, index) => {
             const price = product.offerPrice || product.price;
-            const original = product.price;
             const hasDiscount = product.price && product.offerPrice && product.price > product.offerPrice;
             const discount = hasDiscount
               ? Math.round(((product.price - product.offerPrice) / product.price) * 100)
@@ -105,7 +103,7 @@ const HomeProducts = () => {
         </div>
         {/* Desktop grid: keep ProductCard */}
         <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 pb-14 w-full">
-          {popularProducts.map((product, index) => (
+          {products.map((product, index) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
