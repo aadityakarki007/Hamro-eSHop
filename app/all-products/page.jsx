@@ -156,7 +156,7 @@ const AllProducts = () => {
     };
 
     const getBreadcrumbs = () => {
-        const breadcrumbs = [{ name: 'Home', href: '/' }, { name: 'Products', href: '/products' }];
+        const breadcrumbs = [{ name: 'Home', href: '/' }, { name: 'Products', href: '/all-products' }];
         if (categoryFilter) {
             breadcrumbs.push({ name: categoryFilter, href: `/products?category=${categoryFilter}` });
         }
