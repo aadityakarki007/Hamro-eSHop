@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 // Public routes – no auth needed
 const isPublicRoute = createRouteMatcher([
-  '/',                       // home
+  '/',
   '/all-products',
   '/product/(.*)',
   '/api/product/list',
@@ -14,7 +14,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/user/(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/termsofservice(.*)',    // <-- Use this (no dashes)
+  '/termsofservice(.*)',
   '/privacy-policy(.*)',
   '/about-us(.*)',
   '/terms&conditions(.*)',
