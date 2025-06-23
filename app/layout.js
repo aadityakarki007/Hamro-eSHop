@@ -95,7 +95,7 @@ export default function RootLayout({ children }) {
           <meta name="description" content="Quality online shopping for electronics, fashion, gadgets and home essentials in Nepal. Secure payments, reliable delivery, and authentic products at competitive prices." />
           <meta name="keywords" content="online shopping Nepal, electronics Nepal, fashion Nepal, gadgets Nepal, ecommerce Nepal, buy online Nepal, Kathmandu shopping, Nepal online store, mobile phones Nepal, laptops Nepal, home appliances Nepal, secure shopping Nepal, authentic products Nepal, competitive prices Nepal, reliable delivery Nepal, quality products Nepal, tech accessories Nepal, gaming Nepal, women fashion Nepal, men fashion Nepal, kitchen appliances Nepal, smartphone accessories Nepal, computer parts Nepal, electronic gadgets Nepal, online marketplace Nepal, digital shopping Nepal, Nepal ecommerce platform, online retail Nepal, shopping website Nepal, buy electronics online Nepal, fashion store Nepal, gadget store Nepal" />
           <meta name="author" content="Hamro eShop" />
-          <meta name="theme-color" content="#ea580c" />
+         
           <meta name="copyright" content="Hamro eShop" />
           <meta name="application-name" content="Hamro eShop" />
           <meta name="geo.region" content="NP" />
