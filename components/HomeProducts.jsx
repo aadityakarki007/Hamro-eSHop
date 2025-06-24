@@ -37,9 +37,8 @@ const HomeProducts = () => {
   };
 
   const handleProductClick = (productId, productName) => {
-    // SEO-friendly URL with product name slug
-    const slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-    router.push(`/product/${productId}/${slug}`);
+    // Only use product ID in the URL (no slug)
+    router.push(`/product/${productId}`);
   };
 
   if (loading) return <Loading />;
