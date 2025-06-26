@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^4.13.23",
+    "@clerk/clerk-sdk-node": "^5.1.6",
     "@clerk/nextjs": "^5.0.0",
     "@emailjs/browser": "^4.4.1",
     "axios": "^1.9.0",
@@ -19,6 +19,7 @@
     "git": "^0.1.5",
     "inngest": "^3.38.0",
     "lucide-react": "^0.511.0",
+    "mongodb": "^6.17.0",
     "mongoose": "^8.15.1",
     "next": "^15.3.3",
     "qrcode": "^1.5.4",
