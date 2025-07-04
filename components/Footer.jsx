@@ -17,6 +17,9 @@ const Footer = () => {
             fast delivery 🚚, and excellent customer support 💬 to make your shopping
             experience easy and enjoyable.
           </p>
+          <p className="mt-4 text-xs text-gray-600">
+            <strong>CEO:</strong> Aaditya Karki
+          </p>
         </div>
 
         {/* Company */}
@@ -57,6 +60,9 @@ const Footer = () => {
             range of quality products at great prices. We ensure secure payments 🔒,
             fast delivery 🚚, and excellent customer support 💬 to make your shopping
             experience easy and enjoyable.
+          </p>
+          <p className="mt-4 text-xs text-gray-600">
+            <strong>CEO:</strong> Aaditya Karki
           </p>
         </div>
 
@@ -105,6 +111,14 @@ const Footer = () => {
         >
           Terms of Service
         </a>
+      </div>
+
+      {/* Development Team Credits */}
+      <div className="px-6 md:px-16 lg:px-32 mt-6">
+        <p className="text-center text-xs text-gray-600 leading-relaxed">
+          <strong>Developed, Designed and Edited by:</strong><br />
+          Aaditya Karki, Rupak Bhattarai, Sulav Panthi, Samyog Aryal, Kush Lama, Kritish Bhandari
+        </p>
       </div>
 
       {/* Footer Bottom Text */}
