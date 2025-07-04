@@ -117,7 +117,7 @@ const Footer = () => {
       <div className="px-6 md:px-16 lg:px-32 mt-6">
         <p className="text-center text-xs text-gray-600 leading-relaxed">
           <strong>Developed, Designed and Edited by:</strong><br />
-          Aaditya Karki, Rupak Bhattarai, Sulav Panthi, Samyog Aryal, Kush Lama, Kritish Bhandari
+          Aaditya Karki, Rupak Bhattarai, Sulav Panthi, Samyog Aryal, Kush Lama, Kritish Bhandari, Awmish Panta
         </p>
       </div>
 
