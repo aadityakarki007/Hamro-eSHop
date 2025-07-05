@@ -406,7 +406,8 @@ export default function RootLayout({ children }) {
           <meta property="og:see_also" content="https://www.instagram.com/Hamro_e_shop" />
           
           {/* Search engine verification - Replace with actual codes */}
-          <meta name="google-site-verification" content="your-google-verification-code" />
+          <meta name="google-site-verification" content="RdmsfHygOvTqPu2BDP5uafy9IsTCcB_gZMiL1VQk3Kk" />
+
           <meta name="msvalidate.01" content="your-bing-verification-code" />
           <meta name="yandex-verification" content="your-yandex-verification-code" />
           <meta name="p:domain_verify" content="your-pinterest-verification-code" />
@@ -434,6 +435,7 @@ export default function RootLayout({ children }) {
           <meta name="msapplication-tap-highlight" content="no" />
           <meta name="full-screen" content="yes" />
           <meta name="browsermode" content="application" />
+          <meta name="msvalidate.01" content="34E79EC321067B6270BB26CA45B670FA" />
           
           {/* Security and privacy */}
           <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />

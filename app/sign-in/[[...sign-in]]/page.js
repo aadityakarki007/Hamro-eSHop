@@ -1,3 +1,9 @@
+import React from 'react';
+export const metadata = {
+  title: "Sign Up | Hamro eShop",
+  description: "Create your Hamro eShop account to get the best deals on electronics, fashion, and more.",
+};
+
 import { SignUp } from '@clerk/nextjs'
 
 export default function Page() {

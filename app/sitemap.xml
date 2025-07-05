@@ -1,0 +1,120 @@
+// app/sitemap.js
+export default async function sitemap() {
+  // Static pages
+  const staticPages = [
+    {
+      url: 'https://hamroeshop.com',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: 'https://hamroeshop.com/all-products',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: 'https://hamroeshop.com/electronics',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://hamroeshop.com/fashion',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://hamroeshop.com/gadgets',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://hamroeshop.com/deals',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: 'https://hamroeshop.com/contact',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: 'https://hamroeshop.com/about',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: 'https://hamroeshop.com/privacy-policy',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: 'https://hamroeshop.com/terms-of-service',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+  ];
+
+  // Dynamic product pages (replace with your actual product fetching logic)
+  let productPages = [];
+  try {
+    // Example: Fetch products from your API
+    // const products = await fetch('https://hamroeshop.com/api/products').then(res => res.json());
+    
+    // For now, we'll add some example product URLs
+    const sampleProducts = [
+      { id: 1, slug: 'gaming-headphones', lastModified: new Date() },
+      { id: 2, slug: 'playstation-5', lastModified: new Date() },
+      { id: 3, slug: 'jbl-speakers', lastModified: new Date() },
+      { id: 4, slug: 'gaming-controller', lastModified: new Date() },
+    ];
+    
+    productPages = sampleProducts.map(product => ({
+      url: `https://hamroeshop.com/products/${product.slug}`,
+      lastModified: product.lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    }));
+  } catch (error) {
+    console.error('Error fetching products for sitemap:', error);
+  }
+
+  // Category pages
+  const categoryPages = [
+    {
+      url: 'https://hamroeshop.com/categories/headphones',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: 'https://hamroeshop.com/categories/gaming',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: 'https://hamroeshop.com/categories/speakers',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: 'https://hamroeshop.com/categories/mobile-accessories',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+  ];
+
+  return [...staticPages, ...productPages, ...categoryPages];
+}

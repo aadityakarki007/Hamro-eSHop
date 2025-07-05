@@ -1,6 +1,6 @@
 'use client';
 import React from "react";
-import Head from "next/head";
+// Remove Head import - not needed in App Router
 import Link from "next/link";
 import HeaderSlider from "@/components/HeaderSlider";
 import HomeProducts from "@/components/HomeProducts";
@@ -28,14 +28,7 @@ const Home = () => {
 
   return (
     <div className="relative">
-      <Head>
-        <title>Hamro eShop - Best Deals on Electronics, Fashion, and More</title>
-        <meta name="description" content="Shop headphones, gaming, laptops, and more at Hamro eShop. Discover exclusive deals and top brands." />
-        <meta property="og:title" content="Hamro eShop - Best Deals" />
-        <meta property="og:description" content="Shop headphones, gaming, laptops, and more at Hamro eShop." />
-        <meta property="og:image" content="/og-image.jpg" />
-        <meta property="og:type" content="website" />
-      </Head>
+      {/* Remove Head component - metadata handled in layout.js */}
       <Navbar />
 
       <main>
