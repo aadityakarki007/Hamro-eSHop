@@ -409,7 +409,7 @@ const AllProducts = () => {
                                             }
                                         </p>
                                         <button
-                                            onClick={() => window.location.href = '/products'}
+                                            onClick={() => window.location.href = '/all-products'}
                                             className="px-8 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-semibold"
                                         >
                                             Browse All Products
