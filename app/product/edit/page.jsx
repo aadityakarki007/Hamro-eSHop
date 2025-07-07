@@ -213,6 +213,7 @@ export default function EditProduct() {
                 <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
               <option value="Home & Lifestyle">Home & Lifestyle</option>
               <option value="Sports & Outdoor">Sports & Outdoor</option>
+              <option value="Vapes & Drinks">Vapes & Drinks</option>
               <option value="Electronic & Accessories">Electronic & Accessories</option>
               <option value="Mobiles & Laptops">Mobiles & Laptops</option>
               <option value="Groceries & Pets">Groceries & Pets</option>

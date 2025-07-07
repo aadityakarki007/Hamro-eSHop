@@ -21,13 +21,19 @@ const productSchema = new mongoose.Schema({
     deliveryCharge: { type: Number, default: 80 },
     images: { type: Array, required: true },
     category: { type: String, required: true },
-    // --- Add these fields ---
+    
+    // Existing fields
     stock: { type: Number, default: 0 },
     deliveryDate: { type: String, default: "" },
     warrantyDuration: { type: String, default: "" },
     returnPeriod: { type: String, default: "" },
     isPopular: { type: Boolean, default: false },
-    // ------------------------
+    
+    // Category-specific dynamic fields
+    flavours: { type: String, default: "" }, // For vapes - comma-separated values
+    sizes: { type: String, default: "" }, // For clothing - comma-separated values
+    shoeNumbers: { type: String, default: "" }, // For shoes - comma-separated values
+    
     reviews: [reviewSchema],
     averageRating: { type: Number, default: 0 },
     date: { type: Number, required: true }

@@ -29,6 +29,126 @@ const AddProduct = () => {
   const [returnPeriod, setReturnPeriod] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Category-specific attributes
+  const [flavours, setFlavours] = useState('');
+  const [sizes, setSizes] = useState('');
+  const [shoeNumbers, setShoeNumbers] = useState('');
+
+  // Function to get category-specific attributes
+  const getCategorySpecificField = () => {
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('vape')) {
+      return (
+        <div className="flex flex-col gap-1 w-full">
+          <label className="text-base font-medium" htmlFor="flavours">
+            Available Flavours
+          </label>
+          <input
+            id="flavours"
+            type="text"
+            placeholder="e.g. Strawberry, Vanilla, Mint, Apple"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            onChange={(e) => setFlavours(e.target.value)}
+            value={flavours}
+            autoComplete="off"
+          />
+          <span className="text-xs text-gray-500">
+            Separate multiple flavours with commas
+          </span>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {flavours
+              .split(',')
+              .map((flavour) => flavour.trim())
+              .filter(Boolean)
+              .map((flavour, idx) => (
+                <span
+                  key={idx}
+                  className="px-2 py-1 rounded-full text-xs font-medium border bg-purple-100 text-purple-800 border-purple-300"
+                >
+                  {flavour}
+                </span>
+              ))}
+          </div>
+        </div>
+      );
+    }
+    
+    if (categoryLower.includes('fashion') || categoryLower.includes('clothing')) {
+      return (
+        <div className="flex flex-col gap-1 w-full">
+          <label className="text-base font-medium" htmlFor="sizes">
+            Available Sizes
+          </label>
+          <input
+            id="sizes"
+            type="text"
+            placeholder="e.g. XS, S, M, L, XL, XXL"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            onChange={(e) => setSizes(e.target.value)}
+            value={sizes}
+            autoComplete="off"
+          />
+          <span className="text-xs text-gray-500">
+            Separate multiple sizes with commas
+          </span>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {sizes
+              .split(',')
+              .map((size) => size.trim())
+              .filter(Boolean)
+              .map((size, idx) => (
+                <span
+                  key={idx}
+                  className="px-2 py-1 rounded-full text-xs font-medium border bg-blue-100 text-blue-800 border-blue-300"
+                >
+                  {size}
+                </span>
+              ))}
+          </div>
+        </div>
+      );
+    }
+    
+    if (categoryLower.includes('shoes') || categoryLower.includes('footwear')) {
+      return (
+        <div className="flex flex-col gap-1 w-full">
+          <label className="text-base font-medium" htmlFor="shoe-numbers">
+            Available Shoe Numbers
+          </label>
+          <input
+            id="shoe-numbers"
+            type="text"
+            placeholder="e.g. 6, 7, 8, 9, 10, 11, 12"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            onChange={(e) => setShoeNumbers(e.target.value)}
+            value={shoeNumbers}
+            autoComplete="off"
+          />
+          <span className="text-xs text-gray-500">
+            Separate multiple shoe numbers with commas
+          </span>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {shoeNumbers
+              .split(',')
+              .map((number) => number.trim())
+              .filter(Boolean)
+              .map((number, idx) => (
+                <span
+                  key={idx}
+                  className="px-2 py-1 rounded-full text-xs font-medium border bg-green-100 text-green-800 border-green-300"
+                >
+                  {number}
+                </span>
+              ))}
+          </div>
+        </div>
+      );
+    }
+    
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -51,6 +171,15 @@ const AddProduct = () => {
       formData.append('stock', stock || '0');
       formData.append('warrantyDuration', warrantyDuration || '');
       formData.append('returnPeriod', returnPeriod || '');
+
+      // Add category-specific attributes
+      if (category.toLowerCase().includes('vape')) {
+        formData.append('flavours', flavours || '');
+      } else if (category.toLowerCase().includes('fashion') || category.toLowerCase().includes('clothing')) {
+        formData.append('sizes', sizes || '');
+      } else if (category.toLowerCase().includes('shoes') || category.toLowerCase().includes('footwear')) {
+        formData.append('shoeNumbers', shoeNumbers || '');
+      }
 
       for (let i = 0; i < files.length; i++) {
         formData.append('images', files[i]);
@@ -80,6 +209,9 @@ const AddProduct = () => {
         setStock('');
         setWarrantyDuration('');
         setReturnPeriod('');
+        setFlavours('');
+        setSizes('');
+        setShoeNumbers('');
       } else {
         toast.error(data.message);
       }
@@ -90,12 +222,19 @@ const AddProduct = () => {
     }
   };
 
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    // Reset category-specific fields when category changes
+    setFlavours('');
+    setSizes('');
+    setShoeNumbers('');
+  };
+
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
       <div className="p-4 flex justify-between items-center border-b">
         <h1 className="text-xl font-semibold">Seller Dashboard</h1>
         <Link href="/seller/product-list" className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
-          {/* @ts-ignore */}
           <ListFilter size={18} className="mr-2" />
           Manage Products
         </Link>
@@ -173,12 +312,13 @@ const AddProduct = () => {
             <select
               id="category"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
-              onChange={(e) => setCategory(e.target.value)}
-              defaultValue={category}
+              onChange={handleCategoryChange}
+              value={category}
             >
-               <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
+              <option value="Motors, Tools & DIY">Motors, Tools & DIY</option>
               <option value="Home & Lifestyle">Home & Lifestyle</option>
               <option value="Sports & Outdoor">Sports & Outdoor</option>
+              <option value="Vapes & Drinks">Vapes & Drinks</option>
               <option value="Electronic & Accessories">Electronic & Accessories</option>
               <option value="Mobiles & Laptops">Mobiles & Laptops</option>
               <option value="Groceries & Pets">Groceries & Pets</option>
@@ -201,6 +341,7 @@ const AddProduct = () => {
               <option value="Bathing Tubs & Seats">Bathing Tubs & Seats</option>
               <option value="Cosmetics & Skin Care">Cosmetics & Skin Care</option>
               <option value="Exercise & Fitness">Exercise & Fitness</option>
+              <option value="Shoes & Footwear">Shoes & Footwear</option>
             </select>
           </div>
           <div className="flex flex-col gap-1 w-32">
@@ -328,6 +469,13 @@ const AddProduct = () => {
           </div>
         </div>
 
+        {/* Category-specific field */}
+        {getCategorySpecificField() && (
+          <div className="mb-4">
+            {getCategorySpecificField()}
+          </div>
+        )}
+
         <div className="flex flex-col gap-4 mb-4">
           <div className="flex flex-col gap-1 w-full">
             <label className="text-base font-medium" htmlFor="delivery-date">
@@ -409,7 +557,6 @@ const AddProduct = () => {
           {isSubmitting ? 'Adding...' : 'ADD'}
         </button>
       </form>
-      {/* <Footer /> */}
     </div>
   );
 };
