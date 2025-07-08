@@ -26,6 +26,7 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
   "Motors, Tools & DIY",
   "Home & Lifestyle",
   "Sports & Outdoor",
+  "Vapes & Drinks",
   "Electronic & Accessories",
   "Mobiles & Laptops",
   "Groceries & Pets",

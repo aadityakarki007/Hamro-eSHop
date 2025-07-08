@@ -29,34 +29,115 @@ export async function POST(request) {
 
         // Parse form data
         const formData = await request.formData();
-        const name = formData.get('name');
-        const description = formData.get('description');
+        
+        // Extract basic product data
+        const productData = {
+            userId,
+            sellerName: formData.get('sellerName') || '',
+            name: formData.get('name'),
+            description: formData.get('description'),
+            brand: formData.get('brand') || 'Generic',
+            color: formData.get('color') || 'Multi',
+            price: Number(formData.get('price')),
+            offerPrice: Number(formData.get('offerPrice')),
+            shippingFee: Number(formData.get('shippingFee')) || 0,
+            deliveryCharge: Number(formData.get('deliveryCharge')) || 0,
+            images: [], // Will be populated after upload
+            category: formData.get('category'),
+            stock: Number(formData.get('stock')) || 0,
+            deliveryDate: formData.get('deliveryDate') || '',
+            warrantyDuration: formData.get('warrantyDuration') || '',
+            returnPeriod: formData.get('returnPeriod') || '',
+            isPopular: formData.get('isPopular') === 'true',
+            sellerId: userId, // Add sellerId for proper seller management
+            reviews: [],
+            averageRating: 0,
+            date: Date.now()
+        };
+        
+        // ✅ Extract category-specific data
+        const categorySpecific = {};
         const category = formData.get('category');
-        const price = formData.get('price');
-        const offerPrice = formData.get('offerPrice');
-        const shippingFee = formData.get('shippingFee');
-        const deliveryCharge = formData.get('deliveryCharge');
-        const sellerName = formData.get('sellerName');
-        const brand = formData.get('brand');
-        const color = formData.get('color');
-        const isPopular = formData.get('isPopular') === 'true';
-        const deliveryDate = formData.get('deliveryDate');
-        const stock = formData.get('stock');
-        const warrantyDuration = formData.get('warrantyDuration');
-        const returnPeriod = formData.get('returnPeriod');
+        
+        switch (category) {
+            case 'Vapes & Drinks':
+                categorySpecific.flavor = formData.get('flavor') || '';
+                categorySpecific.nicotineStrength = formData.get('nicotineStrength') || '';
+                categorySpecific.volume = formData.get('volume') || '';
+                
+                // Validate required fields for Vapes & Drinks
+                if (!categorySpecific.flavor) {
+                    return NextResponse.json({
+                        success: false,
+                        message: 'Flavor is required for Vapes & Drinks category'
+                    }, { status: 400 });
+                }
+                break;
+                
+            case 'Electronic & Accessories':
+            case 'Mobiles & Laptops':
+                categorySpecific.model = formData.get('model') || '';
+                categorySpecific.storage = formData.get('storage') || '';
+                categorySpecific.processor = formData.get('processor') || '';
+                categorySpecific.screenSize = formData.get('screenSize') || '';
+                break;
+                
+            case 'Health & Beauty':
+                categorySpecific.skinType = formData.get('skinType') || '';
+                categorySpecific.ingredients = formData.get('ingredients') || '';
+                break;
+                
+            case 'Men\'s Fashion':
+            case 'Women\'s Fashion':
+            case 'Clothing Accessories':
+                categorySpecific.size = formData.get('size') || '';
+                categorySpecific.material = formData.get('material') || '';
+                break;
+                
+            case 'Babies & Toys':
+                categorySpecific.ageRange = formData.get('ageRange') || '';
+                categorySpecific.safetyStandards = formData.get('safetyStandards') || '';
+                break;
+                
+            case 'Sports & Outdoor':
+                categorySpecific.weight = formData.get('weight') || '';
+                categorySpecific.dimensions = formData.get('dimensions') || '';
+                break;
+                
+            default:
+                // For categories without specific fields, you can still store custom data
+                categorySpecific.customField1 = formData.get('customField1') || '';
+                categorySpecific.customField2 = formData.get('customField2') || '';
+                break;
+        }
+        
+        // Add category-specific data to product
+        productData.categorySpecific = categorySpecific;
+        
+        // Validate required fields
+        if (!productData.name || !productData.description || !productData.category || 
+            !productData.price || !productData.offerPrice || !productData.sellerName) {
+            return NextResponse.json({
+                success: false,
+                message: 'Missing required fields: name, description, category, price, offerPrice, and sellerName are required'
+            }, { status: 400 });
+        }
 
-        // Get image files
-        const files = formData.getAll('images');
-        if (!files || files.length === 0) {
-            return NextResponse.json({ success: false, message: "No files uploaded" }, { status: 400 });
+        // Handle image uploads
+        const imageFiles = formData.getAll('images');
+        if (!imageFiles || imageFiles.length === 0) {
+            return NextResponse.json({ 
+                success: false, 
+                message: "At least one image is required" 
+            }, { status: 400 });
         }
         
         // Upload files to Cloudinary
-        const uploadPromises = files.map((file, index) => {
+        const uploadPromises = imageFiles.map((file, index) => {
             return new Promise(async (resolve, reject) => {
                 try {
                     // Check if file is valid
-                    if (!file || typeof file.arrayBuffer !== 'function') {
+                    if (!file || typeof file.arrayBuffer !== 'function' || file.size === 0) {
                         console.error(`Invalid file at index ${index}:`, file);
                         reject(new Error(`Invalid file format for image ${index + 1}`));
                         return;
@@ -73,7 +154,7 @@ export async function POST(request) {
                     cloudinary.uploader.upload_stream(
                         { 
                             resource_type: "auto",
-                            folder: "test", 
+                            folder: "products", 
                             quality: "auto:good",
                             fetch_format: "auto",
                             flags: "progressive"
@@ -98,38 +179,20 @@ export async function POST(request) {
         const uploadResults = await Promise.all(uploadPromises);
         const images = uploadResults.map(result => result.secure_url);
         
+        // Add uploaded images to product data
+        productData.images = images;
+        
         // Connect to database and create product
         await connectDB();
-        const newProduct = await Product.create({
-            userId,
-            sellerName: sellerName || "",
-            name,
-            description,
-            brand: brand || "Generic",
-            color: color || "Multi",
-            category,
-            price: Number(price),
-            offerPrice: Number(offerPrice),
-            shippingFee: Number(shippingFee || 0),
-            deliveryCharge: Number(deliveryCharge || 0),
-            images,
-            isPopular: isPopular,
-            deliveryDate: deliveryDate || '',
-            stock: Number(stock || 0),
-            warrantyDuration: warrantyDuration || '',
-            returnPeriod: returnPeriod || '',
-            sellerId: userId, // Add sellerId for proper seller management
-            reviews: [],
-            averageRating: 0,
-            date: Date.now()
-        });
+        const newProduct = await Product.create(productData);
+        
         console.log('Saved product:', newProduct);
 
         return NextResponse.json({ 
             success: true, 
             message: "Product added successfully", 
             product: newProduct 
-        });
+        }, { status: 201 });
 
     } catch (error) {
         console.error("Product add error:", error);
@@ -149,6 +212,12 @@ export async function POST(request) {
                 success: false, 
                 message: "Duplicate product information"
             }, { status: 409 });
+        } else if (error.message && error.message.includes('timeout')) {
+            // Upload timeout error
+            return NextResponse.json({ 
+                success: false, 
+                message: "Image upload timeout. Please try again with smaller images."
+            }, { status: 408 });
         }
         
         return NextResponse.json({ 
