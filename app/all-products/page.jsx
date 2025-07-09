@@ -96,32 +96,48 @@ const popularCategories = [
 
 
     // SEO Meta Data
-    const getMetaData = () => {
-        const baseTitle = "All Products - HamroEshop";
-        const baseDescription = "Explore all products on HamroEshop. Your one-stop online shop for everything you need.";
-        
-        if (categoryFilter) {
+    // Updated getMetaData function
+const getMetaData = () => {
+    const baseTitle = "All Products - HamroEshop";
+    const baseDescription = "Explore all products on HamroEshop. Your one-stop online shop for everything you need.";
+    
+    // Handle slug-based category
+    const categorySlug = searchParams.get('cat');
+    if (categorySlug) {
+        const matchedCategory = popularCategories.find(cat => 
+            cat.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') === categorySlug
+        );
+        if (matchedCategory) {
             return {
-                title: `${categoryFilter} - HamroEshop`,
-                description: `Browse products in ${categoryFilter} category on HamroEshop. Shop online with great deals.`,
-                keywords: `${categoryFilter}, buy ${categoryFilter}, ${categoryFilter} online, best ${categoryFilter}`
+                title: `${matchedCategory.name} - HamroEshop`,
+                description: `Browse ${matchedCategory.name} products on HamroEshop. Shop online with great deals.`,
+                keywords: `${matchedCategory.name}, buy ${matchedCategory.name}, ${matchedCategory.name} online, best ${matchedCategory.name}`
             };
         }
-        
-        if (searchQuery) {
-            return {
-                title: `Search results for "${searchQuery}" - HamroEshop`,
-                description: `Search results for "${searchQuery}" on HamroEshop. Find the best deals and offers.`,
-                keywords: `${searchQuery}, search ${searchQuery}, buy ${searchQuery}`
-            };
-        }
-        
+    }
+    
+    if (categoryFilter) {
         return {
-            title: baseTitle,
-            description: baseDescription,
-            keywords: "online shopping, products, deals, quality products, fast shipping"
+            title: `${categoryFilter} - HamroEshop`,
+            description: `Browse products in ${categoryFilter} category on HamroEshop. Shop online with great deals.`,
+            keywords: `${categoryFilter}, buy ${categoryFilter}, ${categoryFilter} online, best ${categoryFilter}`
         };
+    }
+    
+    if (searchQuery) {
+        return {
+            title: `Search results for "${searchQuery}" - HamroEshop`,
+            description: `Search results for "${searchQuery}" on HamroEshop. Find the best deals and offers.`,
+            keywords: `${searchQuery}, search ${searchQuery}, buy ${searchQuery}`
+        };
+    }
+    
+    return {
+        title: baseTitle,
+        description: baseDescription,
+        keywords: "online shopping, products, deals, quality products, fast shipping"
     };
+};
 
     const metaData = getMetaData();
 
@@ -147,104 +163,122 @@ const popularCategories = [
 
     // Enhanced filtering and sorting
     // Enhanced filtering and sorting with support for multiple categories
-    useEffect(() => {
-        setIsLoading(true);
-        let filtered = [...products];
+// Updated useEffect with slug-based category filtering
+useEffect(() => {
+    setIsLoading(true);
+    let filtered = [...products];
 
-        // Handle multiple category filters from URL
-        const categoryParams = searchParams.getAll('category');
-        if (categoryParams.length > 0) {
+    // Handle category slug parameter (new logic)
+    const categorySlug = searchParams.get('cat');
+    if (categorySlug) {
+        // Find the popular category that matches the slug
+        const matchedCategory = popularCategories.find(cat => 
+            cat.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') === categorySlug
+        );
+        
+        if (matchedCategory) {
             filtered = filtered.filter(product => 
-                categoryParams.some(cat => 
-                    product.category?.toLowerCase() === cat.toLowerCase()
+                matchedCategory.subcategories.some(subcat => 
+                    product.category?.toLowerCase() === subcat.toLowerCase()
                 )
             );
         }
+    }
 
-        // Multiple category filter from sidebar
-        if (selectedCategories.length > 0) {
-            filtered = filtered.filter(product =>
-                selectedCategories.some(cat => 
-                    product.category?.toLowerCase().includes(cat.toLowerCase())
-                )
-            );
-        }
+    // Handle regular category parameters (existing logic)
+    const categoryParams = searchParams.getAll('category');
+    if (categoryParams.length > 0) {
+        filtered = filtered.filter(product => 
+            categoryParams.some(cat => 
+                product.category?.toLowerCase() === cat.toLowerCase()
+            )
+        );
+    }
 
+    // Multiple category filter from sidebar (existing logic)
+    if (selectedCategories.length > 0) {
+        filtered = filtered.filter(product =>
+            selectedCategories.some(cat => 
+                product.category?.toLowerCase().includes(cat.toLowerCase())
+            )
+        );
+    }
 
-        // Brand filter
-        if (selectedBrands.length > 0) {
-            filtered = filtered.filter(product =>
-                selectedBrands.includes(product.brand)
-            );
-        }
+    // Brand filter (existing logic)
+    if (selectedBrands.length > 0) {
+        filtered = filtered.filter(product =>
+            selectedBrands.includes(product.brand)
+        );
+    }
 
-        // Price range filter
-        filtered = filtered.filter(product => {
-            const price = product.offerPrice || product.price;
-            return price >= priceRange.min && price <= priceRange.max;
-        });
+    // Price range filter (existing logic)
+    filtered = filtered.filter(product => {
+        const price = product.offerPrice || product.price;
+        return price >= priceRange.min && price <= priceRange.max;
+    });
 
-        // Rating filter
-        if (selectedRatings.length > 0) {
-            filtered = filtered.filter(product =>
-                selectedRatings.some(rating => product.rating >= rating)
-            );
-        }
+    // Rating filter (existing logic)
+    if (selectedRatings.length > 0) {
+        filtered = filtered.filter(product =>
+            selectedRatings.some(rating => product.rating >= rating)
+        );
+    }
 
-        // Stock filter
-        if (inStock) {
-            filtered = filtered.filter(product => product.stock > 0);
-        }
+    // Stock filter (existing logic)
+    if (inStock) {
+        filtered = filtered.filter(product => product.stock > 0);
+    }
 
-        // Free shipping filter
-        if (freeShipping) {
-            filtered = filtered.filter(product => product.freeShipping);
-        }
+    // Free shipping filter (existing logic)
+    if (freeShipping) {
+        filtered = filtered.filter(product => product.freeShipping);
+    }
 
-        // Search filter
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(product =>
-                product.name?.toLowerCase().includes(query) ||
-                product.description?.toLowerCase().includes(query) ||
-                product.category?.toLowerCase().includes(query) ||
-                product.brand?.toLowerCase().includes(query) ||
-                product.tags?.some(tag => tag.toLowerCase().includes(query))
-            );
-        }
+    // Search filter (existing logic)
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(product =>
+            product.name?.toLowerCase().includes(query) ||
+            product.description?.toLowerCase().includes(query) ||
+            product.category?.toLowerCase().includes(query) ||
+            product.brand?.toLowerCase().includes(query) ||
+            product.tags?.some(tag => tag.toLowerCase().includes(query))
+        );
+    }
 
-        // Sorting
-        switch (sortBy) {
-            case 'price-low':
-                filtered.sort((a, b) => (a.offerPrice || a.price) - (b.offerPrice || b.price));
-                break;
-            case 'price-high':
-                filtered.sort((a, b) => (b.offerPrice || b.price) - (a.offerPrice || a.price));
-                break;
-            case 'rating':
-                filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-                break;
-            case 'popular':
-                filtered.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
-                break;
-            case 'name':
-                filtered.sort((a, b) => a.name?.localeCompare(b.name));
-                break;
-            case 'discount':
-                filtered.sort((a, b) => {
-                    const discountA = a.price && a.offerPrice ? ((a.price - a.offerPrice) / a.price) * 100 : 0;
-                    const discountB = b.price && b.offerPrice ? ((b.price - b.offerPrice) / b.price) * 100 : 0;
-                    return discountB - discountA;
-                });
-                break;
-            default: // newest
-                filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        }
+    // Sorting (existing logic)
+    switch (sortBy) {
+        case 'price-low':
+            filtered.sort((a, b) => (a.offerPrice || a.price) - (b.offerPrice || b.price));
+            break;
+        case 'price-high':
+            filtered.sort((a, b) => (b.offerPrice || b.price) - (a.offerPrice || a.price));
+            break;
+        case 'rating':
+            filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            break;
+        case 'popular':
+            filtered.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
+            break;
+        case 'name':
+            filtered.sort((a, b) => a.name?.localeCompare(b.name));
+            break;
+        case 'discount':
+            filtered.sort((a, b) => {
+                const discountA = a.price && a.offerPrice ? ((a.price - a.offerPrice) / a.price) * 100 : 0;
+                const discountB = b.price && b.offerPrice ? ((b.price - b.offerPrice) / b.price) * 100 : 0;
+                return discountB - discountA;
+            });
+            break;
+        default: // newest
+            filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    }
 
-        setFilteredProducts(filtered);
-        setCurrentPage(1);
-        setIsLoading(false);
-    }, [products, searchQuery, categoryFilter, sortBy, selectedCategories, selectedBrands, priceRange, selectedRatings, inStock, freeShipping]);
+    setFilteredProducts(filtered);
+    setCurrentPage(1);
+    setIsLoading(false);
+}, [products, searchQuery, categoryFilter, sortBy, selectedCategories, selectedBrands, priceRange, selectedRatings, inStock, freeShipping, searchParams]);
+
 
     // Clear all filters
     const clearFilters = () => {
@@ -419,31 +453,31 @@ const PopularCategoriesSection = () => (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Popular Categories</h2>
         <div className="space-y-3">
-            {popularCategories.map((category) => (
-                <button
-                    key={category.name}
-                    onClick={() => {
-                        // Create URL with multiple categories filter
-                        const categoryParams = category.subcategories.map(sub => 
-                            `category=${encodeURIComponent(sub)}`
-                        ).join('&');
-                        router.push(`/all-products?${categoryParams}`);
-                    }}
-                    className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                >
-                    <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{category.icon}</span>
-                        <span className="text-sm font-medium text-gray-900">{category.name}</span>
-                    </div>
-                    <span className="text-xs text-gray-500 group-hover:text-gray-700">
-                        {category.count} items
-                    </span>
-                </button>
-            ))}
+            {popularCategories.map((category) => {
+                // Create a short slug from category name
+                const categorySlug = category.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+                
+                return (
+                    <button
+                        key={category.name}
+                        onClick={() => {
+                            router.push(`/all-products?cat=${categorySlug}`);
+                        }}
+                        className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                    >
+                        <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{category.icon}</span>
+                            <span className="text-sm font-medium text-gray-900">{category.name}</span>
+                        </div>
+                        <span className="text-xs text-gray-500 group-hover:text-gray-700">
+                            {category.count} items
+                        </span>
+                    </button>
+                );
+            })}
         </div>
     </div>
 );
-
 
     // Product Card for List View
     const ProductListCard = ({ product, index }) => {
@@ -539,53 +573,107 @@ const PopularCategoriesSection = () => (
         );
     };
 
-    const getPageTitle = () => {
-        if (categoryFilter) return `${categoryFilter} Collection`;
-        if (searchQuery) return `Search: "${searchQuery}"`;
-        return "All Products";
-    };
-
-    const getBreadcrumbs = () => {
-        const breadcrumbs = [{ name: 'Home', href: '/' }, { name: 'Products', href: '/all-products' }];
-        if (categoryFilter) {
-            breadcrumbs.push({ name: categoryFilter, href: `/all-products?category=${categoryFilter}` });
+   // Updated getPageTitle function
+const getPageTitle = () => {
+    const categorySlug = searchParams.get('cat');
+    if (categorySlug) {
+        const matchedCategory = popularCategories.find(cat => 
+            cat.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') === categorySlug
+        );
+        if (matchedCategory) {
+            return `${matchedCategory.name} Collection`;
         }
-        return breadcrumbs;
-    };
+    }
+    
+    if (categoryFilter) return `${categoryFilter} Collection`;
+    if (searchQuery) return `Search: "${searchQuery}"`;
+    return "All Products";
+};
+    // Updated getBreadcrumbs function to handle slug-based categories
+const getBreadcrumbs = () => {
+    const breadcrumbs = [{ name: 'Home', href: '/' }, { name: 'Products', href: '/all-products' }];
+    
+    // Handle slug-based category
+    const categorySlug = searchParams.get('cat');
+    if (categorySlug) {
+        const matchedCategory = popularCategories.find(cat => 
+            cat.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') === categorySlug
+        );
+        if (matchedCategory) {
+            breadcrumbs.push({ 
+                name: matchedCategory.name, 
+                href: `/all-products?cat=${categorySlug}` 
+            });
+        }
+    }
+    
+    // Handle regular category filter
+    if (categoryFilter) {
+        breadcrumbs.push({ name: categoryFilter, href: `/all-products?category=${categoryFilter}` });
+    }
+    
+    return breadcrumbs;
+};
+
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const generatePageNumbers = () => {
-        const pages = [];
-        const maxVisible = 5;
-        
-        if (totalPages <= maxVisible) {
-            for (let i = 1; i <= totalPages; i++) {
-                pages.push(i);
-            }
-        } else {
-            if (currentPage <= 3) {
-                for (let i = 1; i <= 4; i++) pages.push(i);
-                pages.push('...');
-                pages.push(totalPages);
-            } else if (currentPage >= totalPages - 2) {
-                pages.push(1);
-                pages.push('...');
-                for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
-            } else {
-                pages.push(1);
-                pages.push('...');
-                for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
-                pages.push('...');
-                pages.push(totalPages);
-            }
+   const generatePageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    
+    if (totalPages <= maxVisible) {
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
         }
-        return pages;
-    };
+    } else {
+        if (currentPage <= 3) {
+            for (let i = 1; i <= 4; i++) pages.push(i);
+            pages.push('...');
+            pages.push(totalPages);
+        } else if (currentPage >= totalPages - 2) {
+            pages.push(1);
+            pages.push('...');
+            for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            pages.push('...');
+            for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+            pages.push('...');
+            pages.push(totalPages);
+        }
+    }
+    return pages;
+};
 
+// Add the QuickCategoriesSection component here
+const QuickCategoriesSection = () => (
+    <div className="lg:hidden px-4 py-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Quick Categories</h3>
+            <div className="grid grid-cols-3 gap-2">
+                {popularCategories.slice(0, 6).map((category) => {
+                    const categorySlug = category.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+                    
+                    return (
+                        <button
+                            key={category.name}
+                            onClick={() => router.push(`/all-products?cat=${categorySlug}`)}
+                            className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        >
+                            <span className="text-2xl mb-1">{category.icon}</span>
+                            <span className="text-xs font-medium text-gray-900 text-center">{category.name}</span>
+                            <span className="text-xs text-gray-500">{category.count}</span>
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    </div>
+);
     return (
         <>
             <Head>
@@ -929,26 +1017,8 @@ const PopularCategoriesSection = () => (
                     </div>
                 )}
 
-                {/* Quick Categories Banner - Mobile */}
-                <div className="lg:hidden px-4 py-4">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                        <h3 className="text-sm font-medium text-gray-900 mb-3">Quick Categories</h3>
-                        <div className="grid grid-cols-3 gap-2">
-                            {popularCategories.slice(0, 6).map((category) => (
-                                <button
-                                    key={category.name}
-                                    onClick={() => router.push(`/products?category=${category.name}`)}
-                                    className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                                >
-                                    <span className="text-2xl mb-1">{category.icon}</span>
-                                    <span className="text-xs font-medium text-gray-900 text-center">{category.name}</span>
-                                    <span className="text-xs text-gray-500">{category.count}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
+               {/* Quick Categories Banner - Mobile */}
+<QuickCategoriesSection />
                 {/* Floating Action Button for Mobile Filters */}
                 <div className="lg:hidden fixed bottom-6 right-6 z-40">
                     <button
@@ -962,7 +1032,7 @@ const PopularCategoriesSection = () => (
                 </div>
 
                 {/* Back to Top Button */}
-                <div className="fixed bottom-6 left-6 z-40">
+                <div className="fixed bottom-6 left-6 z-40">ag
                     <button
                         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                         className="w-12 h-12 bg-gray-800 text-white rounded-full shadow-lg hover:bg-gray-900 transition-colors flex items-center justify-center opacity-75 hover:opacity-100"
