@@ -1,18 +1,18 @@
 import UsedPromoCode from "@/models/UsedPromoCode";
 
 const luckyNumbers = {
-  "eShopA823": 87, 
-  "eShopA492": 39,
-  "eShopA192": 74,
-  "eShopA765": 55,
-  "eShopA318": 61,
-  "eShopA654": 93,
-  "eShopA105": 28,
-  "eShopA907": 42,
-  "eShopA231": 17,
-  "eShopA379": 66,
-  "eShopA000": 77,
-  "eShopA111": 7,
+  // "eShopA823": 87, 
+  // "eShopA492": 39,
+  // "eShopA192": 74,
+  // "eShopA765": 55,
+  // "eShopA318": 61,
+  // "eShopA654": 93,
+  // "eShopA105": 28,
+  // "eShopA907": 42,
+  // "eShopA231": 17,
+  // "eShopA379": 66,
+  // "eShopA000": 77,
+  // "eShopA111": 7,
 
 };
 

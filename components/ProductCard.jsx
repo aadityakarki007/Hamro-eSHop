@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { assets } from '@/assets/assets';
+import React from 'react';
 
 const ProductCard = ({ product }) => {
     // Use product._id directly for link (remove slug completely)

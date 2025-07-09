@@ -1,7 +1,7 @@
 'use client';
+
 import React from "react";
 import Head from "next/head";
-import Link from "next/link";
 import HeaderSlider from "@/components/HeaderSlider";
 import HomeProducts from "@/components/HomeProducts";
 import Banner from "@/components/Banner";
@@ -36,6 +36,7 @@ const Home = () => {
         <meta property="og:image" content="/og-image.jpg" />
         <meta property="og:type" content="website" />
       </Head>
+
       <Navbar />
 
       <main>
@@ -45,19 +46,19 @@ const Home = () => {
           <FeaturedProduct />
           <Banner />
 
-          {/* Try Your Luck Section */}
-          <section className="text-center py-12 my-8" aria-label="Try Your Luck Promo">
+          {/* Try Your Luck Section with attractive background */}
+          <section className="text-center py-16 my-12 rounded-xl bg-gradient-to-r from-violet-50 to-pink-50 shadow-inner">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-pulse">
               ✨ Unlock Your Special Promo Code Today ✨
             </h1>
             <p className="text-gray-600 mt-4 text-lg md:text-xl max-w-2xl mx-auto">
-              Choose any number from 1 to 100 and unlock a special promo code made just for you!
+              Choose any number from 1 to 100 and unlock a special promo code just for you!
             </p>
-            <div className="mt-6">
+            <div className="mt-8">
               <button
                 onClick={handleTryClick}
                 disabled={!isLoaded}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-4 px-12 rounded-full shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Try Your Luck"
               >
                 {!isLoaded ? '⏳ Loading...' : '🎲 Try Your Luck'}

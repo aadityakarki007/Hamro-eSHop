@@ -34,18 +34,18 @@ const OrderSummary = () => {
 
   // Valid promo codes with their fixed discount percentages
   const validPromoCodes = {
-    "eShopA823": 1,  // 1% discount
-    "eShopA492": 12, // 12% discount
-    "eShopA192": 18, // 18% discount
-    "eShopA765": 40, // 40% discount
-    "eShopA318": 24, // 24% discount
-    "eShopA654": 10, // 10% discount
-    "eShopA105": 8,  // 8% discount
-    "eShopA907": 22, // 22% discount
-    "eShopA231": 5,  // 5% discount
-    "eShopA379": 15, // 15% discount
-    "eShopA000": 40, // 50% discount
-    "eShopA111": 50,
+    // "eShopA823": 1,  // 1% discount
+    // "eShopA492": 12, // 12% discount
+    // "eShopA192": 18, // 18% discount
+    // "eShopA765": 40, // 40% discount
+    // "eShopA318": 24, // 24% discount
+    // "eShopA654": 10, // 10% discount
+    // "eShopA105": 8,  // 8% discount
+    // "eShopA907": 22, // 22% discount
+    // "eShopA231": 5,  // 5% discount
+    // "eShopA379": 15, // 15% discount
+    // "eShopA000": 40, // 50% discount
+    // "eShopA111": 50,
   };
 
   const paymentMethods = [
