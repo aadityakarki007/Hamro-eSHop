@@ -102,8 +102,8 @@ const AddAddress = () => {
                         />
                         <input
                             className="px-2 py-2.5 focus:border-orange-500 transition border border-gray-500/30 rounded outline-none w-full text-gray-500"
-                            type="text"
-                            placeholder="Zip code"
+                            type="string"
+                            placeholder="Nearest Popular place"
                             onChange={(e) => setAddress({ ...address, zipcode: e.target.value })}
                             value={address.zipcode}
                         />

@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { useAppContext } from "@/context/AppContext";
 import { useSearchParams, useRouter } from 'next/navigation';
 
+
 const AllProducts = () => {
     const { products } = useAppContext();
     const [filteredProducts, setFilteredProducts] = useState(products);
@@ -17,6 +18,8 @@ const AllProducts = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [viewMode, setViewMode] = useState('grid'); // grid or list
+
+   
     
     // Filter states
     const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
@@ -38,14 +41,59 @@ const AllProducts = () => {
     const minPrice = Math.min(...products.map(p => p.price || 0));
 
     // Popular categories with icons
-    const popularCategories = [
-        { name: 'Electronics', icon: '📱', count: products.filter(p => p.category?.toLowerCase().includes('electronics')).length },
-        { name: 'Fashion', icon: '👕', count: products.filter(p => p.category?.toLowerCase().includes('fashion')).length },
-        { name: 'Home & Living', icon: '🏠', count: products.filter(p => p.category?.toLowerCase().includes('home')).length },
-        { name: 'Sports', icon: '⚽', count: products.filter(p => p.category?.toLowerCase().includes('sports')).length },
-        { name: 'Books', icon: '📚', count: products.filter(p => p.category?.toLowerCase().includes('books')).length },
-        { name: 'Beauty', icon: '💄', count: products.filter(p => p.category?.toLowerCase().includes('beauty')).length },
-    ];
+    // Popular categories with consolidated subcategories - maximum 6 categories
+const popularCategories = [
+    { 
+        name: 'Technology & Electronics', // Combined: Electronic & Accessories + Mobiles & Laptops + Gaming Accessories
+        icon: '💻', 
+        subcategories: ['Electronic & Accessories', 'Mobiles & Laptops', 'Gaming Accessories'],
+        count: products.filter(p => 
+            ['Electronic & Accessories', 'Mobiles & Laptops', 'Gaming Accessories'].includes(p.category)
+        ).length 
+    },
+    { 
+        name: 'Fashion & Accessories', // Combined: Men's Fashion + Women's Fashion + Watches & Accessories + Clothing Accessories
+        icon: '👗', 
+        subcategories: ['Men\'s Fashion', 'Women\'s Fashion', 'Watches & Accessories', 'Clothing Accessories'],
+        count: products.filter(p => 
+            ['Men\'s Fashion', 'Women\'s Fashion', 'Watches & Accessories', 'Clothing Accessories'].includes(p.category)
+        ).length 
+    },
+    { 
+        name: 'Home & Lifestyle', // Combined: Home & Lifestyle + Gifts & Decorations
+        icon: '🏠', 
+        subcategories: ['Home & Lifestyle', 'Gifts & Decorations'],
+        count: products.filter(p => 
+            ['Home & Lifestyle', 'Gifts & Decorations'].includes(p.category)
+        ).length 
+    },
+    { 
+        name: 'Health & Beauty', // Combined: Health & Beauty + Cosmetics & Skin Care + Soaps, Cleansers & Bodywash
+        icon: '💄', 
+        subcategories: ['Health & Beauty', 'Cosmetics & Skin Care', 'Soaps, Cleansers & Bodywash'],
+        count: products.filter(p => 
+            ['Health & Beauty', 'Cosmetics & Skin Care', 'Soaps, Cleansers & Bodywash'].includes(p.category)
+        ).length 
+    },
+    { 
+        name: 'Kids & Family', // Combined: Babies & Toys + Toys & Games + Nursery + Diapering & Potty + Feeding + etc.
+        icon: '🧸', 
+        subcategories: ['Babies & Toys', 'Toys & Games', 'Nursery', 'Diapering & Potty', 'Pacifiers & Accessories', 'Feeding', 'Remote Control & Vehicles', 'Bathing Tubs & Seats'],
+        count: products.filter(p => 
+            ['Babies & Toys', 'Toys & Games', 'Nursery', 'Diapering & Potty', 'Pacifiers & Accessories', 'Feeding', 'Remote Control & Vehicles', 'Bathing Tubs & Seats'].includes(p.category)
+        ).length 
+    },
+    { 
+        name: 'Sports & Outdoor', // Combined: Sports & Outdoor + Sports & Outdoor Play + Exercise & Fitness + Motors, Tools & DIY + Groceries & Pets + Vapes & Drinks
+        icon: '⚽', 
+        subcategories: ['Sports & Outdoor', 'Sports & Outdoor Play', 'Exercise & Fitness', 'Motors, Tools & DIY', 'Groceries & Pets', 'Vapes & Drinks'],
+        count: products.filter(p => 
+            ['Sports & Outdoor', 'Sports & Outdoor Play', 'Exercise & Fitness', 'Motors, Tools & DIY', 'Groceries & Pets', 'Vapes & Drinks'].includes(p.category)
+        ).length 
+    }
+];
+
+
 
     // SEO Meta Data
     const getMetaData = () => {
@@ -98,18 +146,22 @@ const AllProducts = () => {
     }, []);
 
     // Enhanced filtering and sorting
+    // Enhanced filtering and sorting with support for multiple categories
     useEffect(() => {
         setIsLoading(true);
         let filtered = [...products];
 
-        // Category filter
-        if (categoryFilter) {
+        // Handle multiple category filters from URL
+        const categoryParams = searchParams.getAll('category');
+        if (categoryParams.length > 0) {
             filtered = filtered.filter(product => 
-                product.category?.toLowerCase() === categoryFilter.toLowerCase()
+                categoryParams.some(cat => 
+                    product.category?.toLowerCase() === cat.toLowerCase()
+                )
             );
         }
 
-        // Multiple category filter
+        // Multiple category filter from sidebar
         if (selectedCategories.length > 0) {
             filtered = filtered.filter(product =>
                 selectedCategories.some(cat => 
@@ -117,6 +169,7 @@ const AllProducts = () => {
                 )
             );
         }
+
 
         // Brand filter
         if (selectedBrands.length > 0) {
@@ -361,28 +414,36 @@ const AllProducts = () => {
     );
 
     // Popular Categories Sidebar
-    const PopularCategoriesSection = () => (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Popular Categories</h2>
-            <div className="space-y-3">
-                {popularCategories.map((category) => (
-                    <button
-                        key={category.name}
-                        onClick={() => router.push(`/products?category=${category.name}`)}
-                        className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                    >
-                        <div className="flex items-center space-x-3">
-                            <span className="text-2xl">{category.icon}</span>
-                            <span className="text-sm font-medium text-gray-900">{category.name}</span>
-                        </div>
-                        <span className="text-xs text-gray-500 group-hover:text-gray-700">
-                            {category.count} items
-                        </span>
-                    </button>
-                ))}
-            </div>
+    // Popular Categories Sidebar with improved URL handling
+const PopularCategoriesSection = () => (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Popular Categories</h2>
+        <div className="space-y-3">
+            {popularCategories.map((category) => (
+                <button
+                    key={category.name}
+                    onClick={() => {
+                        // Create URL with multiple categories filter
+                        const categoryParams = category.subcategories.map(sub => 
+                            `category=${encodeURIComponent(sub)}`
+                        ).join('&');
+                        router.push(`/all-products?${categoryParams}`);
+                    }}
+                    className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                >
+                    <div className="flex items-center space-x-3">
+                        <span className="text-2xl">{category.icon}</span>
+                        <span className="text-sm font-medium text-gray-900">{category.name}</span>
+                    </div>
+                    <span className="text-xs text-gray-500 group-hover:text-gray-700">
+                        {category.count} items
+                    </span>
+                </button>
+            ))}
         </div>
-    );
+    </div>
+);
+
 
     // Product Card for List View
     const ProductListCard = ({ product, index }) => {
@@ -487,7 +548,7 @@ const AllProducts = () => {
     const getBreadcrumbs = () => {
         const breadcrumbs = [{ name: 'Home', href: '/' }, { name: 'Products', href: '/all-products' }];
         if (categoryFilter) {
-            breadcrumbs.push({ name: categoryFilter, href: `/products?category=${categoryFilter}` });
+            breadcrumbs.push({ name: categoryFilter, href: `/all-products?category=${categoryFilter}` });
         }
         return breadcrumbs;
     };
@@ -765,7 +826,7 @@ const AllProducts = () => {
             }
           </p>
           <button
-            onClick={() => window.location.href = '/products'}
+            onClick={() => window.location.href = '/all-products'}
             className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
           >
             Browse All Products
