@@ -1020,7 +1020,7 @@ const QuickCategoriesSection = () => (
                {/* Quick Categories Banner - Mobile */}
 <QuickCategoriesSection />
                 {/* Floating Action Button for Mobile Filters */}
-                <div className="lg:hidden fixed bottom-6 right-6 z-40">
+                <div className="lg:hidden fixed bottom-12 right-6 z-40">
                     <button
                         onClick={() => setShowMobileFilters(true)}
                         className="w-14 h-14 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 transition-colors flex items-center justify-center"
@@ -1032,7 +1032,7 @@ const QuickCategoriesSection = () => (
                 </div>
 
                 {/* Back to Top Button */}
-                <div className="fixed bottom-6 left-6 z-40">ag
+                <div className="fixed bottom-11 left-6 z-40">
                     <button
                         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                         className="w-12 h-12 bg-gray-800 text-white rounded-full shadow-lg hover:bg-gray-900 transition-colors flex items-center justify-center opacity-75 hover:opacity-100"
