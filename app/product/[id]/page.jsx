@@ -26,33 +26,32 @@ const Product = () => {
     const [selectedColor, setSelectedColor] = useState('');
 
     const addToCart = async (itemId) => {
-  if (!itemId) {
-    toast.error('Invalid product ID');
-    return;
-  }
+        if (!itemId) {
+            toast.error('Invalid product ID');
+            return;
+        }
 
-  let cartData = structuredClone(cartItems);
-  if (cartData[itemId]) {
-    cartData[itemId].quantity += 1;
-  } else {
-    cartData[itemId] = { quantity: 1, color: selectedColor || null };
-  }
-  setCartItems(cartData);
-  toast.success('Item added to cart');
-
-  if (user) {
-    try {
-      const token = await getToken();
-      await axios.post('/api/cart/update', { cartData }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-    } catch (error) {
-      console.error('Cart update error:', error);
-      toast.error(error.response?.data?.message || error.message || 'Failed to update cart');
-    }
-  }
-};
-
+        let cartData = structuredClone(cartItems);
+        if (cartData[itemId]) {
+            cartData[itemId] += 1;
+        } else {
+            cartData[itemId] = 1;
+        }
+        setCartItems(cartData);
+        toast.success('Item added to cart');
+        
+        if (user) { 
+            try {
+                const token = await getToken();
+                await axios.post('/api/cart/update', { cartData }, { 
+                    headers: { Authorization: `Bearer ${token}` } 
+                });
+            } catch (error) {
+                console.error('Cart update error:', error);
+                toast.error(error.response?.data?.message || error.message || 'Failed to update cart');
+            }
+        }
+    };
 
     const fetchProductData = async () => {
         if (!products || products.length === 0) return;
@@ -79,19 +78,24 @@ const Product = () => {
 
     useEffect(() => {
         if (productData?._id) {
-            // Generate full URL for QR code
-            let qrCodeUrl;
-            if (typeof window !== 'undefined') {
-                // Browser environment - use current origin + product path
-                qrCodeUrl = `${window.location.origin}/product/${productData._id}`;
-            } else {
-                // Server environment - use relative path (you might want to add your domain here)
-                qrCodeUrl = `https://hamroeshop.com/product/${productData._id}`;
-            }
+            // Generate QR code using product ID directly
+            const qrCodeUrl = `https://www.hamroeshop.com/product/${productData._id}`;
             
-            QRCode.toDataURL(qrCodeUrl)
-                .then(url => setQrUrl(url))
-                .catch(err => console.error('QR Code generation error:', err));
+            QRCode.toDataURL(qrCodeUrl, {
+                width: 200,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            })
+            .then(url => {
+                console.log('QR Code generated successfully for product:', productData._id);
+                setQrUrl(url);
+            })
+            .catch(err => {
+                console.error('QR Code generation error:', err);
+            });
         }
     }, [productData?._id]);
     
@@ -149,247 +153,215 @@ const Product = () => {
         return <Loading />;
     }
 
-    // ✅ ProductDetails.jsx — same file or separate if you want
+    const ProductDetails = React.memo(({ product, onAddToCart, onBuyNow }) => {
+        const discount = React.useMemo(() => 
+            Math.round(((product.price - product.offerPrice) / product.price) * 100),
+            [product.price, product.offerPrice]
+        );
 
-const ProductDetails = React.memo(
-  ({
-    product,
-    colorOptions,
-    selectedColor,
-    setSelectedColor,
-    onAddToCart,
-    onBuyNow,
-    qrUrl,
-    router,
-  }) => {
-    const discount = React.useMemo(
-      () =>
-        Math.round(
-          ((product.price - product.offerPrice) / product.price) * 100
-        ),
-      [product.price, product.offerPrice]
-    );
-
-    return (
-      <div className="space-y-6">
-        {/* Product name */}
-        <h1 className="text-2xl font-medium mb-2">
-          {product.name || "Product Name"}
-        </h1>
-
-        {/* ✅ Description for Desktop & Tablet */}
-        <p className="hidden md:block text-gray-600 mb-4">
-          {product.description || "No description available"}
-        </p>
-
-        {/* Seller */}
-        <div className="bg-gray-50 p-4 rounded-lg border">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-medium text-sm">
-                {product.sellerName
-                  ? product.sellerName.charAt(0).toUpperCase()
-                  : "S"}
-              </span>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Sold by</p>
-              <p className="font-medium text-gray-800">
-                {product.sellerName || "Unknown Seller"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Ratings */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-0.5">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Image
-                key={star}
-                className="h-4 w-4"
-                src={
-                  star <= Math.floor(product.averageRating || 0)
-                    ? assets.star_icon
-                    : assets.star_dull_icon
-                }
-                alt={`${star} star`}
-                width={16}
-                height={16}
-              />
-            ))}
-            <span className="ml-2 text-sm">
-              {product.averageRating
-                ? product.averageRating.toFixed(1)
-                : "No ratings"}
-            </span>
-          </div>
-          <p className="text-sm text-gray-500">
-            ({product.reviews?.length || 0} reviews)
-          </p>
-        </div>
-
-        {/* Price */}
-        <div className="flex items-center gap-4">
-          <p className="text-2xl font-medium">
-            Rs. {product.offerPrice || product.price || 0}
-          </p>
-          {product.price &&
-            product.offerPrice &&
-            product.price !== product.offerPrice && (
-              <>
-                <p className="text-gray-500 line-through">
-                  Rs. {product.price}
-                </p>
-                {discount > 0 && (
-                  <p className="text-green-600 text-sm">{discount}% off</p>
-                )}
-              </>
-            )}
-        </div>
-
-        {/* Product details */}
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <p className="text-gray-600">
-              <span className="font-semibold">Delivery:</span>{" "}
-              <span className="font-medium text-blue-600">
-                {product.deliveryDate?.trim() !== ""
-                  ? product.deliveryDate
-                  : "N/A"}
-              </span>
-            </p>
-            <p className="text-gray-600">
-              <span className="font-semibold">Brand:</span>{" "}
-              <span className="font-medium text-gray-800">
-                {product.brand || "N/A"}
-              </span>
-            </p>
-            <p className="text-gray-600">
-              <span className="font-semibold">Color:</span>{" "}
-              <span className="font-medium text-gray-800">
-                {product.color || "N/A"}
-              </span>
-            </p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-gray-600">
-              <span className="font-semibold">Stock:</span>{" "}
-              <span
-                className={`font-medium ${
-                  Number(product.stock) > 0
-                    ? Number(product.stock) <= 5
-                      ? "text-orange-600"
-                      : "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
-                {Number(product.stock) > 0
-                  ? Number(product.stock) <= 5
-                    ? `Only ${product.stock} left`
-                    : `${product.stock} available`
-                  : "Out of stock"}
-              </span>
-            </p>
-            <p className="text-gray-600">
-              <span className="font-semibold">Warranty:</span>{" "}
-              <span className="font-medium text-gray-800">
-                {product.warrantyDuration?.trim() !== ""
-                  ? product.warrantyDuration
-                  : "N/A"}
-              </span>
-            </p>
-            <p className="text-gray-600">
-              <span className="font-semibold">Return Period:</span>{" "}
-              <span className="font-medium text-gray-800">
-                {product.returnPeriod?.trim() !== ""
-                  ? product.returnPeriod
-                  : "N/A"}
-              </span>
-            </p>
-          </div>
-        </div>
-
-        {/* QR Code */}
-        {qrUrl && (
-          <div className="flex flex-col md:flex-row items-start gap-6 mt-4 md:justify-between">
-            <div className="flex-shrink-0">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <Image
-                  src={qrUrl}
-                  alt="Product QR Code"
-                  width={100}
-                  height={100}
-                  className="mix-blend-multiply"
-                />
-              </div>
-            </div>
-
-            {colorOptions.length > 1 && (
-              <div className="flex flex-col justify-center md:ml-auto min-w-[300px]">
-                <div className="font-medium mb-2">Choose Color:</div>
-                <div className="flex gap-2">
-                  {colorOptions.map((clr) => (
-                    <button
-                      key={clr}
-                      type="button"
-                      className={`w-8 h-8 rounded-full border-2 ${
-                        selectedColor === clr
-                          ? "border-orange-500 ring-2 ring-orange-300"
-                          : "border-gray-300"
-                      }`}
-                      style={{ backgroundColor: clr.toLowerCase() }}
-                      title={clr}
-                      onClick={() => setSelectedColor(clr)}
-                    ></button>
-                  ))}
+        return (
+            <div className="space-y-6">
+                {/* Product name and description - Hide on mobile, show on desktop */}
+                <div className="hidden md:block">
+                    <h1 className="text-2xl font-medium mb-2">{product.name || 'Product Name'}</h1>
+                    <p className="text-gray-600 mb-4">{product.description || 'No description available'}</p>
                 </div>
-                <div className="mt-2 text-sm">
-                  Selected:{" "}
-                  <span className="font-semibold">{selectedColor}</span>
+
+                {/* Product name only on mobile */}
+                <div className="block md:hidden">
+                    <h1 className="text-2xl font-medium mb-2">{product.name || 'Product Name'}</h1>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-4 mt-6">
-          <button
-            onClick={() => onAddToCart(product._id)}
-            className="w-full px-8 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!product._id}
-          >
-            Add to Cart
-          </button>
-          <button
-            onClick={() => onBuyNow(product._id)}
-            className="w-full px-8 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-slate-50 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!product._id}
-          >
-            Buy Now
-          </button>
-        </div>
+                {/* Seller Information */}
+                <div className="bg-gray-50 p-4 rounded-lg border">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                            <span className="text-white font-medium text-sm">
+                                {product.sellerName ? product.sellerName.charAt(0).toUpperCase() : 'S'}
+                            </span>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500">Sold by</p>
+                            <p className="font-medium text-gray-800">
+                                {product.sellerName || 'Unknown Seller'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-        {/* ✅ Mobile Only Description */}
-        <div className="md:hidden mt-4 text-gray-600">
-          {product.description || "No description available"}
+                {/* Ratings */}
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <Image
+                                key={star}
+                                className="h-4 w-4"
+                                src={star <= Math.floor(product.averageRating || 0) ? assets.star_icon : assets.star_dull_icon}
+                                alt={`${star} star`}
+                                width={16}
+                                height={16}
+                            />
+                        ))}
+                        <span className="ml-2 text-sm">
+                            {product.averageRating ? product.averageRating.toFixed(1) : 'No ratings'}
+                        </span>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                        ({product.reviews?.length || 0} reviews)
+                    </p>
+                </div>
+
+                {/* Price information */}
+                <div className="flex items-center gap-4">
+                    <p className="text-2xl font-medium">Rs. {product.offerPrice || product.price || 0}</p>
+                    {product.price && product.offerPrice && product.price !== product.offerPrice && (
+                        <>
+                            <p className="text-gray-500 line-through">Rs. {product.price}</p>
+                            {discount > 0 && (
+                                <p className="text-green-600 text-sm">{discount}% off</p>
+                            )}
+                        </>
+                    )}
+                </div>
+
+                {/* Product details in 2 columns */}
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <p className="text-gray-600">
+                            <span className="font-semibold">Delivery:</span>{" "}
+                            <span className="font-medium text-blue-600">
+                                {product.deliveryDate && product.deliveryDate.trim() !== "" ? product.deliveryDate : "N/A"}
+                            </span>
+                        </p>
+                        <p className="text-gray-600">
+                            <span className="font-semibold">Brand:</span>{" "}
+                            <span className="font-medium text-gray-800">{product.brand || 'N/A'}</span>
+                        </p>
+                        <p className="text-gray-600">
+                            <span className="font-semibold">Color:</span>{" "}
+                            <span className="font-medium text-gray-800">{product.color || 'N/A'}</span>
+                        </p>
+                    </div>
+                    <div className="space-y-2">
+                        <p className="text-gray-600">
+                            <span className="font-semibold">Stock:</span>{" "}
+                            <span className={`font-medium ${
+                                Number(product.stock) > 0 
+                                    ? Number(product.stock) <= 5 
+                                        ? 'text-orange-600' 
+                                        : 'text-green-600' 
+                                    : 'text-red-600'
+                            }`}>
+                                {Number(product.stock) > 0 
+                                    ? Number(product.stock) <= 5 
+                                        ? `Only ${product.stock} left` 
+                                        : `${product.stock} available` 
+                                    : 'Out of stock'}
+                            </span>
+                        </p>
+                        <p className="text-gray-600">
+                            <span className="font-semibold">Warranty:</span>{" "}
+                            <span className="font-medium text-gray-800">
+                                {product.warrantyDuration && product.warrantyDuration.trim() !== "" ? product.warrantyDuration : "N/A"}
+                            </span>
+                        </p>
+                        <p className="text-gray-600">
+                            <span className="font-semibold">Return Period:</span>{" "}
+                            <span className="font-medium text-gray-800">
+                                {product.returnPeriod && product.returnPeriod.trim() !== "" ? product.returnPeriod : "N/A"}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                {/* QR code and additional content */}
+<div className="flex flex-col md:flex-row items-start gap-6 mt-4">
+  {/* QR Code */}
+  <div className="flex-shrink-0">
+    <h4 className="text-sm font-medium mb-2">Share Product</h4>
+    <div className="bg-white p-3 rounded-lg shadow-sm border">
+      {qrUrl ? (
+        <Image 
+          src={qrUrl} 
+          alt="Product QR Code" 
+          width={120} 
+          height={120} 
+          className="mix-blend-multiply"
+        />
+      ) : (
+        <div className="w-[120px] h-[120px] bg-gray-100 rounded flex items-center justify-center">
+          <span className="text-gray-400 text-xs">Generating QR...</span>
         </div>
+      )}
+    </div>
+    <p className="text-xs text-gray-500 mt-1 text-center">Scan to share</p>
+  </div>
+
+ 
+
+  {/* Color picker can stay here if needed */}
+  {colorOptions.length > 1 && (
+    <div className="flex flex-col md:ml-20">
+      <div className="font-medium mb-6">Choose Color:</div>
+      <div className="flex gap-2">
+        {colorOptions.map((clr) => (
+          <button
+            key={clr}
+            type="button"
+            className={`w-8 h-8 rounded-full border-2 ${
+              selectedColor === clr
+                ? "border-orange-500 ring-2 ring-orange-300"
+                : "border-gray-300"
+            }`}
+            style={{ backgroundColor: clr.toLowerCase() }}
+            title={clr}
+            onClick={() => setSelectedColor(clr)}
+          ></button>
+        ))}
       </div>
-    );
-  }
-);
+      <div className="mt-2 text-sm">
+        Selected: <span className="font-semibold">{selectedColor}</span>
+      </div>
+    </div>
+  )}
+</div>
 
+                {/* Product description on mobile - Show only on mobile */}
+                <div className="block md:hidden">
+                    <h4 className="text-lg font-medium mb-2">Product Description</h4>
+                    <p className="text-gray-600 mb-4">{product.description || 'No description available'}</p>
+                </div>
 
-
-
+                {/* Action buttons */}
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                    <button
+                        onClick={() => addToCart(product._id)}
+                        className="w-full px-8 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!product._id}
+                    >
+                        Add to Cart
+                    </button>
+                    <button
+                        onClick={() => { 
+                            addToCart(product._id); 
+                            if (router?.push) router.push('/cart');
+                        }}
+                        className="w-full px-8 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-slate-50 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!product._id}
+                    >
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+        );
+    });
 
     // Calculate discount percentage safely
     const discountPercentage = productData.price && productData.offerPrice 
         ? Math.round(((productData.price - productData.offerPrice) / productData.price) * 100)
         : 0;
 
-    // Assume product.color is a string like "Red, Blue, Green"
+    // Parse color options from product.color string
     const colorOptions = productData.color
         ? productData.color.split(",").map((clr) => clr.trim()).filter(Boolean)
         : [];
@@ -435,7 +407,14 @@ const ProductDetails = React.memo(
                     </div>
 
                     {/* Right column - Product details */}
-                    <ProductDetails product={productData} onAddToCart={addToCart} onBuyNow={() => { addToCart(productData._id); if (router?.push) router.push('/cart'); }} />
+                    <ProductDetails 
+                        product={productData} 
+                        onAddToCart={addToCart} 
+                        onBuyNow={() => { 
+                            addToCart(productData._id); 
+                            if (router?.push) router.push('/cart'); 
+                        }} 
+                    />
                 </div>
 
                 
