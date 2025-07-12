@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://hamroeshop.com
+
+# Sitemaps
+Sitemap: https://hamroeshop.com/sitemap.xml
