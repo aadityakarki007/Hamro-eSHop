@@ -9,6 +9,81 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useClerk } from "@clerk/clerk-react";
 
+// Custom Dropdown Component
+const CustomDropdown = ({ 
+  options, 
+  value, 
+  onChange, 
+  placeholder, 
+  disabled = false,
+  className = "" 
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (option) => {
+    onChange(option);
+    setIsOpen(false);
+  };
+
+  return (
+    <div 
+      ref={dropdownRef} 
+      className={`relative ${className}`}
+    >
+      <div
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        className={`
+          px-2 py-2.5 border rounded w-full text-gray-500 bg-white cursor-pointer
+          flex justify-between items-center
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400'}
+          ${isOpen ? 'border-orange-600' : ''}
+        `}
+      >
+        <span className={value ? 'text-gray-700' : 'text-gray-500'}>
+          {value || placeholder}
+        </span>
+        <svg 
+          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
+          {options.map((option, index) => (
+            <div
+              key={index}
+              onClick={() => handleSelect(option)}
+              className={`
+                px-3 py-2 cursor-pointer hover:bg-orange-50 hover:text-orange-600
+                ${value === option ? 'bg-orange-100 text-orange-700' : 'text-gray-700'}
+              `}
+            >
+              {option}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Province → District full map
 const PROVINCE_DISTRICTS = {
   "Province 1": [
@@ -80,7 +155,7 @@ const BAGMATI_MUNICIPALITIES = {
   ],
   "Rasuwa": [
     "Uttargaya Rural Municipality", "Kalika Rural Municipality", "Gosaikunda Rural Municipality",
-    "Naukunda Rural Municipality", "Aamachhodingmo Rural Municipality"
+    "Naukunda Rural Municipality", "Aamachchodingmo Rural Municipality"
   ],
   "Sindhupalchok": [
     "Chautara Sangachokgadhi Municipality", "Melamchi Municipality",
@@ -123,7 +198,7 @@ export default function AddAddress() {
 
   const [address, setAddress] = useState({
     fullName: '',
-    phoneNumber: '',
+    phoneNumber: '+977 ',
     province: '',
     district: '',
     zipcode: '',
@@ -149,8 +224,33 @@ export default function AddAddress() {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+
     if (!address.fullName || !address.phoneNumber || !address.province || !address.district || !address.area) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // ✅ Nepali mobile number format: +977 97 / 98 + 8 digits (exactly 10 digits total)
+    // Remove +977 and spaces for validation
+    const cleanPhoneNumber = address.phoneNumber.replace(/^\+977\s*/, '').replace(/\s/g, '');
+    const phonePattern = /^9[7-8][0-9]{8}$/;
+
+    if (cleanPhoneNumber.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
+
+    if (!phonePattern.test(cleanPhoneNumber)) {
+      toast.error("Please enter a valid Nepali mobile number");
+      return;
+    }
+
+    // ✅ Block dummy numbers like 9999999999 or 1234567890
+    const allSameDigits = /^(\d)\1+$/;
+    const knownFakeNumbers = ["1234567890", "9876543210"];
+
+    if (allSameDigits.test(cleanPhoneNumber) || knownFakeNumbers.includes(cleanPhoneNumber)) {
+      toast.error("This phone number looks fake. Please enter your real number.");
       return;
     }
 
@@ -194,7 +294,7 @@ export default function AddAddress() {
         toast.success(data.message);
         setAddress({
           fullName: '',
-          phoneNumber: '',
+          phoneNumber: '+977 ',
           province: '',
           district: '',
           zipcode: '',
@@ -229,45 +329,51 @@ export default function AddAddress() {
             <input
               className="px-2 py-2.5 border rounded w-full text-gray-500"
               type="text"
-              placeholder="Phone number"
+              placeholder="+977 Phone number"
               value={address.phoneNumber}
-              onChange={(e) => setAddress({ ...address, phoneNumber: e.target.value })}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Ensure it always starts with +977
+                if (!value.startsWith('+977 ')) {
+                  setAddress({ ...address, phoneNumber: '+977 ' });
+                  return;
+                }
+                // Extract only the digits after +977
+                const digits = value.replace('+977 ', '').replace(/\D/g, '');
+                // Limit to exactly 10 digits
+                if (digits.length <= 10) {
+                  setAddress({ ...address, phoneNumber: '+977 ' + digits });
+                }
+              }}
+              onFocus={(e) => {
+                if (e.target.value === '') {
+                  setAddress({ ...address, phoneNumber: '+977 ' });
+                }
+              }}
             />
 
-            <select
-              className="px-2 py-2.5 border rounded w-full text-gray-500"
+            <CustomDropdown
+              options={Object.keys(PROVINCE_DISTRICTS)}
               value={address.province}
-              onChange={(e) => handleProvinceChange(e.target.value)}
-            >
-              <option value="">Select Province</option>
-              {Object.keys(PROVINCE_DISTRICTS).map((prov) => (
-                <option key={prov} value={prov}>{prov}</option>
-              ))}
-            </select>
+              onChange={handleProvinceChange}
+              placeholder="Select Province"
+            />
 
-            <select
-              className="px-2 py-2.5 border rounded w-full text-gray-500"
+            <CustomDropdown
+              options={address.province ? PROVINCE_DISTRICTS[address.province] : []}
               value={address.district}
-              onChange={(e) => handleDistrictChange(e.target.value)}
+              onChange={handleDistrictChange}
+              placeholder="Select District"
               disabled={!address.province}
-            >
-              <option value="">Select District</option>
-              {address.province && PROVINCE_DISTRICTS[address.province].map((dist) => (
-                <option key={dist} value={dist}>{dist}</option>
-              ))}
-            </select>
+            />
 
             {address.province === "Bagmati" && BAGMATI_MUNICIPALITIES[address.district] ? (
-              <select
-                className="px-2 py-2.5 border rounded w-full text-gray-500"
+              <CustomDropdown
+                options={BAGMATI_MUNICIPALITIES[address.district]}
                 value={address.zipcode}
-                onChange={(e) => setAddress({ ...address, zipcode: e.target.value })}
-              >
-                <option value="">Select Municipality/Metro</option>
-                {BAGMATI_MUNICIPALITIES[address.district].map((mun) => (
-                  <option key={mun} value={mun}>{mun}</option>
-                ))}
-              </select>
+                onChange={(value) => setAddress({ ...address, zipcode: value })}
+                placeholder="Select Municipality/Metro"
+              />
             ) : (
               <input
                 className="px-2 py-2.5 border rounded w-full text-gray-500"

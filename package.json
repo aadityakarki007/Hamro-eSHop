@@ -15,6 +15,7 @@
     "axios": "^1.9.0",
     "cloudinary": "^2.6.1",
     "emailjs-com": "^3.2.0",
+    "firebase": "^11.10.0",
     "framer-motion": "^10.12.16",
     "git": "^0.1.5",
     "inngest": "^3.38.0",
