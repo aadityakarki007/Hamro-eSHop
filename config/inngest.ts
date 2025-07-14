@@ -75,13 +75,13 @@ export const syncUserUpdation = inngest.createFunction(
       });
       
       await step.run('update-user', async () => {
-        // Use findByIdAndUpdate instead - cleaner and avoids TypeScript union type issues
-        await User.findByIdAndUpdate(
-          id, 
-          updateData, 
-          { new: true, upsert: true }
-        );
-      });
+  await User.findByIdAndUpdate(
+    id, 
+    updateData, 
+    { new: true, upsert: true }
+  ).exec();  // 👈 ADD `.exec()` here!
+});
+
       
       return { success: true, userId: id };
     } catch (error) {
