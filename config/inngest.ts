@@ -17,7 +17,6 @@ interface OrderData {
   status: string;
 }
 
-
 // Create a client to send and receive events
 export const inngest = new Inngest({
   id: "quickcart-inngest",
@@ -44,9 +43,10 @@ export const syncUserCreation = inngest.createFunction(
       });
       
       await step.run('create-user', async () => {
-        await User.create(userData);
+        const user = new User(userData);
+        await user.save();
       });
-      
+
       return { success: true, userId: id };
     } catch (error) {
       console.error('Error in syncUserData:', error);
@@ -55,15 +55,16 @@ export const syncUserCreation = inngest.createFunction(
   }
 );
 
-// Update user data
+// Update user data - FIXED VERSION
 export const syncUserUpdation = inngest.createFunction(
   { id: 'quickcart-next-update-user-from-clerk' },
   { event: 'clerk.user.updated' },
   async ({ event, step }) => {
     try {
       const { id, first_name, last_name, email_addresses, image_url } = event.data;
-      const userData = {
-        _id: id,
+      
+      // Don't include _id in the update data
+      const updateData = {
         email: email_addresses[0].email_address,
         name: first_name + " " + last_name,
         imageUrl: image_url
@@ -74,7 +75,12 @@ export const syncUserUpdation = inngest.createFunction(
       });
       
       await step.run('update-user', async () => {
-        await User.findByIdAndUpdate(id, userData, { new: true, upsert: true });
+        // Use findByIdAndUpdate instead - cleaner and avoids TypeScript union type issues
+        await User.findByIdAndUpdate(
+          id, 
+          updateData, 
+          { new: true, upsert: true }
+        );
       });
       
       return { success: true, userId: id };
@@ -107,9 +113,9 @@ export const syncUserDeletion = inngest.createFunction(
       return { success: false, error: error.message };
     }
   }
-)
+);
 
-//Inngest function to create user's order in database
+// Inngest function to create user's order in database
 export const createOrder = inngest.createFunction(
   { 
     id: 'create-user-order',
@@ -145,6 +151,4 @@ export const createOrder = inngest.createFunction(
       return { success: false, error: error.message };
     }
   }
-    
-)
-
+);
