@@ -10,8 +10,7 @@ const SideBar = () => {
         { name: 'Add Product', path: '/seller', icon: assets.add_icon },
         { name: 'Product List', path: '/seller/product-list', icon: assets.product_list_icon },
         { name: 'Orders', path: '/seller/orders', icon: assets.order_icon },
-        { name: 'Add Blog', path: '/seller/blog/add', icon: assets.add_icon }, // You can create a blog_icon in assets
-        { name: 'Blog List', path: '/seller/blog/list', icon: assets.product_list_icon }, // You can create a blog_list_icon in assets
+       
     ];
 
     return (
