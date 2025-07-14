@@ -63,8 +63,9 @@ export const syncUserUpdation = inngest.createFunction(
   async ({ event, step }) => {
     try {
       const { id, first_name, last_name, email_addresses, image_url } = event.data;
-      const userData = {
-        _id: id,
+      
+      // Don't include _id in the update data
+      const updateData = {
         email: email_addresses[0].email_address,
         name: first_name + " " + last_name,
         imageUrl: image_url
@@ -75,22 +76,12 @@ export const syncUserUpdation = inngest.createFunction(
       });
       
       await step.run('update-user', async () => {
-        // Option 1: Use findOneAndUpdate instead
+        // Use findOneAndUpdate with $set operator
         await User.findOneAndUpdate(
-  { _id: id }, 
-  userData, 
-  { new: true, upsert: true }
-).exec();
-
-        
-        // Option 2: Alternative approach - separate the operations
-        // const existingUser = await User.findById(id);
-        // if (existingUser) {
-        //   await User.findByIdAndUpdate(id, userData, { new: true });
-        // } else {
-        //   const newUser = new User(userData);
-        //   await newUser.save();
-        // }
+          { _id: id }, 
+          { $set: updateData }, 
+          { new: true, upsert: true }
+        );
       });
       
       return { success: true, userId: id };
