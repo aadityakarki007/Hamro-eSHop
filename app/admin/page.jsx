@@ -13,30 +13,43 @@ export default function AdminPage() {
   const [showLoginForm, setShowLoginForm] = useState(false)
   const [credentials, setCredentials] = useState({ username: '', password: '' })
   const [loginError, setLoginError] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [authState, setAuthState] = useState('loading') // 'loading', 'unauthorized', 'needsLogin', 'authenticated'
 
   // Check Clerk authentication and seller role
   useEffect(() => {
-    if (isLoaded) {
-      if (!user) {
-        // User not logged in with Clerk
-        router.push('/sign-in')
-        return
-      }
+    if (!isLoaded) return // Wait for Clerk to load
 
-      // Check if user has seller role
-      const userRole = user.publicMetadata?.role
-      if (userRole !== 'seller') {
-        // User doesn't have seller role
-        router.push('/')
-        return
-      }
-
-      // User has seller role, now show login form
-      setShowLoginForm(true)
-      setIsLoading(false)
+    if (!user) {
+      setAuthState('unauthorized')
+      return
     }
-  }, [user, isLoaded, router])
+
+    // Check if user has seller role
+    const userRole = user.publicMetadata?.role
+    if (userRole !== 'seller') {
+      setAuthState('unauthorized')
+      return
+    }
+
+    // User has seller role, now show login form
+    setAuthState('needsLogin')
+    setShowLoginForm(true)
+  }, [user, isLoaded])
+
+  // Handle redirects based on auth state
+  useEffect(() => {
+    if (authState === 'unauthorized') {
+      // Use setTimeout to avoid issues with immediate redirects
+      const timer = setTimeout(() => {
+        if (!user) {
+          router.push('/sign-in')
+        } else {
+          router.push('/')
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [authState, user, router])
 
   // Handle username/password login
   const handleLogin = (e) => {
@@ -45,14 +58,24 @@ export default function AdminPage() {
 
     if (credentials.username === 'eshop123' && credentials.password === 'eshop12') {
       setIsAuthenticated(true)
+      setAuthState('authenticated')
       setShowLoginForm(false)
     } else {
       setLoginError('Invalid username or password')
     }
   }
 
+  // Handle logout
+  const handleLogout = () => {
+    setIsAuthenticated(false)
+    setShowLoginForm(true)
+    setAuthState('needsLogin')
+    setCredentials({ username: '', password: '' })
+    setLoginError('')
+  }
+
   // Loading state
-  if (isLoading || !isLoaded) {
+  if (!isLoaded || authState === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -63,8 +86,19 @@ export default function AdminPage() {
     )
   }
 
+  // Don't render anything if unauthorized (will redirect)
+  if (authState === 'unauthorized') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-gray-600">Redirecting...</p>
+        </div>
+      </div>
+    )
+  }
+
   // Show login form if not authenticated
-  if (showLoginForm && !isAuthenticated) {
+  if (authState === 'needsLogin' && !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full space-y-8">
@@ -90,7 +124,7 @@ export default function AdminPage() {
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Username"
                   value={credentials.username}
-                  onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
                 />
               </div>
               <div>
@@ -105,7 +139,7 @@ export default function AdminPage() {
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                   value={credentials.password}
-                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
                 />
               </div>
             </div>
@@ -129,7 +163,7 @@ export default function AdminPage() {
   }
 
   // Main admin dashboard
-  if (isAuthenticated) {
+  if (authState === 'authenticated' && isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
@@ -145,11 +179,7 @@ export default function AdminPage() {
                   ● Online
                 </span>
                 <button
-                  onClick={() => {
-                    setIsAuthenticated(false)
-                    setShowLoginForm(true)
-                    setCredentials({ username: '', password: '' })
-                  }}
+                  onClick={handleLogout}
                   className="text-sm text-red-600 hover:text-red-800"
                 >
                   Logout
