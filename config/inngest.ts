@@ -1,6 +1,7 @@
 import { Inngest } from "inngest";
 import connectDB from "./db";
 import User from "@/models/user";
+
 import Order from "@/models/Order";
 
 interface OrderItem {
@@ -76,10 +77,11 @@ export const syncUserUpdation = inngest.createFunction(
       await step.run('update-user', async () => {
         // Option 1: Use findOneAndUpdate instead
         await User.findOneAndUpdate(
-          { _id: id }, 
-          userData, 
-          { new: true, upsert: true }
-        );
+  { _id: id }, 
+  userData, 
+  { new: true, upsert: true }
+).exec();
+
         
         // Option 2: Alternative approach - separate the operations
         // const existingUser = await User.findById(id);
