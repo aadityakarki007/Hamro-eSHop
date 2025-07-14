@@ -15,6 +15,8 @@ const HeaderSlider = () => {
       buttonText2: "Find more",
       imgSrc: assets.header_headphone_image,
       link: "https://www.hamroeshop.com/product/6847e56f94e24a6b4981a855",
+      altText: "Premium headphones with superior sound quality",
+      bgColor: "bg-gradient-to-r from-orange-50 to-red-50"
     },
     {
       id: 2,
@@ -26,6 +28,8 @@ const HeaderSlider = () => {
       buttonText2: "Explore Deals",
       imgSrc: assets.header_playstation_image,
       link: "https://www.hamroeshop.com/product/684acf35a9eca259d9bc91c3",
+      altText: "PlayStation 5 gaming console for ultimate gaming experience",
+      bgColor: "bg-gradient-to-r from-blue-50 to-purple-50"
     },
     {
       id: 3,
@@ -37,6 +41,8 @@ const HeaderSlider = () => {
       buttonText2: "Learn More",
       imgSrc: assets.header_macbook_image,
       link: "/products",
+      altText: "Apple MacBook Pro laptop with powerful performance",
+      bgColor: "bg-gradient-to-r from-gray-50 to-slate-50"
     },
   ];
 
@@ -45,7 +51,7 @@ const HeaderSlider = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % sliderData.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
   }, [sliderData.length]);
 
@@ -54,76 +60,125 @@ const HeaderSlider = () => {
   };
 
   return (
-    <div className="overflow-hidden relative w-full">
+    <section 
+      className="overflow-hidden relative w-full"
+      aria-label="Product promotional slider"
+    >
       <div
-        className="flex transition-transform duration-700 ease-in-out"
+        className="flex transition-transform duration-500 ease-in-out"
         style={{
           transform: `translateX(-${currentSlide * 100}%)`,
         }}
       >
         {sliderData.map((slide, index) => (
-                      <div
+          <div
             key={slide.id}
-            className="flex flex-row items-center justify-between bg-[#E6E9F2] py-3 md:py-8 md:px-14 px-4 mt-6 rounded-xl min-w-full md:min-h-0 min-h-[140px]"
+            className={`flex flex-row items-center justify-between ${slide.bgColor} py-3 md:py-5 md:px-8 px-4 mt-4 md:mt-6 rounded-lg md:rounded-xl min-w-full md:min-h-[290px] min-h-[120px] border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300`}
           >
-            {/* Mobile Layout - Side by side with shorter content */}
-            <div className="md:pl-8 flex-1 md:mt-0">
-              <p className="md:text-base text-xs text-orange-600 pb-1">
-                <span className="md:hidden">{slide.mobileOffer}</span>
-                <span className="hidden md:block">{slide.offer}</span>
-              </p>
-              <h1 className="max-w-lg md:text-[40px] md:leading-[48px] text-sm leading-4 font-semibold">
-                <span className="md:hidden">{slide.mobileTitle}</span>
-                <span className="hidden md:block">{slide.title}</span>
-              </h1>
-              <div className="flex flex-col md:flex-row items-start md:items-center mt-2 md:mt-6 gap-1 md:gap-0">
+            {/* Content Section */}
+            <div className="flex-1 pr-2 md:pr-4">
+              {/* Offer Badge */}
+              <div className="mb-1 md:mb-2">
+                <span className="inline-flex items-center gap-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 py-0.5 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium shadow-md animate-pulse">
+                  <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                  <span className="md:hidden">{slide.mobileOffer}</span>
+                  <span className="hidden md:block">{slide.offer}</span>
+                </span>
+              </div>
+
+              {/* Main Title */}
+              <h2 className="text-gray-800 font-bold mb-2 md:mb-4 leading-tight">
+                <span className="md:hidden text-sm bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{slide.mobileTitle}</span>
+                <span className="hidden md:block text-xl lg:text-2xl max-w-md bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{slide.title}</span>
+              </h2>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-row gap-2 md:gap-3">
                 {slide.link.startsWith("http") ? (
                   <a
                     href={slide.link}
-                    className="md:px-10 px-3 md:py-2.5 py-1 bg-orange-600 rounded-full text-white font-medium text-xs md:text-base"
+                    className="inline-block bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-3 py-1 md:px-6 md:py-2 rounded text-xs md:text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     {slide.buttonText1}
                   </a>
                 ) : (
                   <Link href={slide.link}>
-                    <button className="md:px-10 px-3 md:py-2.5 py-1 bg-orange-600 rounded-full text-white font-medium text-xs md:text-base">
+                    <button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-3 py-1 md:px-6 md:py-2 rounded text-xs md:text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                       {slide.buttonText1}
                     </button>
                   </Link>
                 )}
+                
                 <Link href="/all-products">
-                  <button className="group flex items-center gap-1 md:gap-2 px-2 md:px-6 py-1 md:py-2.5 font-medium text-xs md:text-base">
+                  <button className="group flex items-center gap-1 text-gray-600 hover:text-orange-600 px-2 py-1 md:px-3 md:py-2 text-xs md:text-sm font-medium transition-all duration-300 border border-gray-300 hover:border-orange-300 rounded bg-white/80 hover:bg-orange-50">
                     {slide.buttonText2}
-                    <Image className="group-hover:translate-x-1 transition w-2 h-2 md:w-4 md:h-4" src={assets.arrow_icon} alt="arrow_icon" />
+                    <Image 
+                      className="group-hover:translate-x-1 transition-transform duration-300 w-3 h-3 md:w-4 md:h-4 group-hover:scale-110" 
+                      src={assets.arrow_icon} 
+                      alt="" 
+                      aria-hidden="true"
+                    />
                   </button>
                 </Link>
               </div>
             </div>
             
-            {/* Image container - much smaller on mobile, same on desktop */}
-            <div className="flex items-center justify-center flex-shrink-0">
-              <Image
-                className="md:w-72 w-20 h-auto object-contain"
-                src={slide.imgSrc}
-                alt={`Slide ${index + 1}`}
-              />
+            {/* Image Section */}
+            <div className="flex-shrink-0 flex items-center justify-center relative">
+              <div className="relative group">
+                <Image
+                  className="w-16 h-16 md:w-32 md:h-32 lg:w-36 lg:h-36 object-contain transition-transform duration-300 group-hover:scale-110"
+                  src={slide.imgSrc}
+                  alt={slide.altText}
+                  priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
+                />
+                {/* Floating background effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-100/50 to-red-100/50 rounded-full blur-xl opacity-70 -z-10 animate-pulse"></div>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-center gap-2 mt-6 md:mt-8">
+      {/* Slide Indicators */}
+      <div className="flex items-center justify-center gap-2 mt-3 md:mt-4">
         {sliderData.map((_, index) => (
-          <div
+          <button
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`h-2 w-2 rounded-full cursor-pointer ${
-              currentSlide === index ? "bg-orange-600" : "bg-gray-500/30"
+            className={`h-2 w-2 md:h-2.5 md:w-2.5 rounded-full transition-all duration-300 transform hover:scale-125 ${
+              currentSlide === index 
+                ? "bg-gradient-to-r from-orange-500 to-red-500 shadow-lg scale-110" 
+                : "bg-gray-300 hover:bg-gray-400"
             }`}
-          ></div>
+            aria-label={`Go to slide ${index + 1}`}
+          />
         ))}
       </div>
-    </div>
+
+      {/* Schema.org structured data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "Featured Products",
+            "description": "Promotional slider featuring headphones, gaming consoles, and laptops",
+            "itemListElement": sliderData.map((slide, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "name": slide.title,
+              "description": slide.offer,
+              "url": slide.link.startsWith("http") ? slide.link : `https://www.hamroeshop.com${slide.link}`
+            }))
+          })
+        }}
+      />
+    </section>
   );
 };
 
