@@ -9,7 +9,6 @@ import MobileNavBar from '@/components/MobileNavBar';
 
 const outfit = Outfit({ subsets: ['latin'], weight: ["300", "400", "500"] });
 
-
 export const metadata = {
   metadataBase: new URL("https://hamroeshop.com"),
   title: "Hamro eShop - Online Shopping for Electronics, Fashion & Gadgets in Nepal",
