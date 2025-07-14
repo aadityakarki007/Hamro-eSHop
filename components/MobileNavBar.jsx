@@ -10,6 +10,7 @@ const MobileNavBar = () => {
   // Hide MobileNavBar on /seller route
   if (pathname === '/seller') return null;
   if (pathname === '/blog' || pathname.startsWith('/blog/')) return null;
+  //haha
 
   const isActive = (path) => pathname === path;
 
