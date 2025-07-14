@@ -44,8 +44,10 @@ export const syncUserCreation = inngest.createFunction(
       });
       
       await step.run('create-user', async () => {
-        await User.create(userData);
-      });
+  const user = new User(userData);
+  await user.save();
+});
+
       
       return { success: true, userId: id };
     } catch (error) {
