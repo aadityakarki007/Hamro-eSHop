@@ -17,7 +17,6 @@ interface OrderData {
   status: string;
 }
 
-
 // Create a client to send and receive events
 export const inngest = new Inngest({
   id: "quickcart-inngest",
@@ -44,11 +43,10 @@ export const syncUserCreation = inngest.createFunction(
       });
       
       await step.run('create-user', async () => {
-  const user = new User(userData);
-  await user.save();
-});
+        const user = new User(userData);
+        await user.save();
+      });
 
-      
       return { success: true, userId: id };
     } catch (error) {
       console.error('Error in syncUserData:', error);
@@ -57,7 +55,7 @@ export const syncUserCreation = inngest.createFunction(
   }
 );
 
-// Update user data
+// Update user data - FIXED VERSION
 export const syncUserUpdation = inngest.createFunction(
   { id: 'quickcart-next-update-user-from-clerk' },
   { event: 'clerk.user.updated' },
@@ -76,7 +74,21 @@ export const syncUserUpdation = inngest.createFunction(
       });
       
       await step.run('update-user', async () => {
-        await User.findByIdAndUpdate(id, userData, { new: true, upsert: true });
+        // Option 1: Use findOneAndUpdate instead
+        await User.findOneAndUpdate(
+          { _id: id }, 
+          userData, 
+          { new: true, upsert: true }
+        );
+        
+        // Option 2: Alternative approach - separate the operations
+        // const existingUser = await User.findById(id);
+        // if (existingUser) {
+        //   await User.findByIdAndUpdate(id, userData, { new: true });
+        // } else {
+        //   const newUser = new User(userData);
+        //   await newUser.save();
+        // }
       });
       
       return { success: true, userId: id };
@@ -109,9 +121,9 @@ export const syncUserDeletion = inngest.createFunction(
       return { success: false, error: error.message };
     }
   }
-)
+);
 
-//Inngest function to create user's order in database
+// Inngest function to create user's order in database
 export const createOrder = inngest.createFunction(
   { 
     id: 'create-user-order',
@@ -147,6 +159,4 @@ export const createOrder = inngest.createFunction(
       return { success: false, error: error.message };
     }
   }
-    
-)
-
+);
