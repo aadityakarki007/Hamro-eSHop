@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { dbConnect } from '@/lib/dbConnect';
+import dbConnect from '@/lib/dbConnect'
+
 import Blog from '@/models/Blog';
 
 // GET all categories with post counts

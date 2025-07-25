@@ -1,4 +1,5 @@
-import dbConnect from '@/lib/dbConnect';
+import dbConnect from '../../../lib/dbConnect'
+
 import Blog from '@/models/Blog';
 import { NextResponse } from 'next/server';
 
