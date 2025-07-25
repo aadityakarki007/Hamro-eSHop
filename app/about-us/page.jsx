@@ -68,8 +68,8 @@ const About = () => {
   ];
 
   const supportTeam = [
-    { name: "Subhekshya Bhattarai", role: "Support" },
-    { name: "Dikshya Bogati", role: "Support" },
+    { name: "Subhekshya Bhattarai", role: "Promotion" },
+    { name: "Dikshya Bogati", role: "Ads" },
   ];
 
   return (
@@ -164,25 +164,26 @@ const About = () => {
         </div>
 
         {/* Our Team Section */}
-        <div className="max-w-6xl mx-auto mt-20">
-          <div className="text-center mb-12">
+        <div className="max-w-5xl mx-auto mt-20">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-orange-600 mb-4">Our Team</h2>
             <div className="w-16 h-1 bg-orange-500 rounded-full mx-auto shadow-lg"></div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Team Members */}
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <div className="flex items-center justify-center mb-6">
-                <Users className="text-orange-500 mr-3" size={32} />
-                <h3 className="text-2xl font-bold text-gray-800">Team Members</h3>
+          {/* Mobile Layout - Side by Side */}
+          <div className="lg:hidden grid grid-cols-2 gap-4">
+            {/* Team Members - Mobile */}
+            <div className="bg-white rounded-xl shadow-lg p-4">
+              <div className="flex items-center justify-center mb-4">
+                <Users className="text-orange-500 mr-2" size={24} />
+                <h3 className="text-lg font-bold text-gray-800">Team Members</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {teamMembers.map((member, i) => (
                   <motion.div
                     key={member.name}
-                    className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    className="p-2 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
                     custom={i}
                     initial="hidden"
                     whileInView="visible"
@@ -190,8 +191,73 @@ const About = () => {
                     variants={memberVariants}
                   >
                     <div>
-                      <h4 className="font-semibold text-gray-800 text-lg">{member.name}</h4>
-                      <p className="text-orange-600 font-medium">{member.role}</p>
+                      <h4 className="font-semibold text-gray-800 text-sm">{member.name}</h4>
+                      <p className="text-orange-600 font-medium text-xs">{member.role}</p>
+                    </div>
+                    {member.role === "CEO" && (
+                      <div className="bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium mt-1 inline-block">
+                        Leader
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Support Team - Mobile */}
+            <div className="bg-white rounded-xl shadow-lg p-4">
+              <div className="flex items-center justify-center mb-4">
+                <Heart className="text-orange-500 mr-2" size={24} />
+                <h3 className="text-lg font-bold text-gray-800">Support Team</h3>
+              </div>
+              
+              <div className="space-y-2">
+                {supportTeam.map((member, i) => (
+                  <motion.div
+                    key={member.name}
+                    className="p-2 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    custom={i + teamMembers.length}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={memberVariants}
+                  >
+                    <div>
+                      <h4 className="font-semibold text-gray-800 text-sm">{member.name}</h4>
+                      <p className="text-orange-600 font-medium text-xs">{member.role}</p>
+                    </div>
+                    <div className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium mt-1 inline-block">
+                      Supporter
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Layout - Original but Smaller */}
+          <div className="hidden lg:grid grid-cols-2 gap-8">
+            {/* Team Members - Desktop */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-center mb-6">
+                <Users className="text-orange-500 mr-3" size={28} />
+                <h3 className="text-xl font-bold text-gray-800">Team Members</h3>
+              </div>
+              
+              <div className="space-y-3">
+                {teamMembers.map((member, i) => (
+                  <motion.div
+                    key={member.name}
+                    className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    custom={i}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={memberVariants}
+                  >
+                    <div>
+                      <h4 className="font-semibold text-gray-800 text-base">{member.name}</h4>
+                      <p className="text-orange-600 font-medium text-sm">{member.role}</p>
                     </div>
                     {member.role === "CEO" && (
                       <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium">
@@ -203,18 +269,18 @@ const About = () => {
               </div>
             </div>
 
-            {/* Support Team */}
-            <div className="bg-white rounded-2xl shadow-xl p-8">
+            {/* Support Team - Desktop */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-center mb-6">
-                <Heart className="text-orange-500 mr-3" size={32} />
-                <h3 className="text-2xl font-bold text-gray-800">Support Team</h3>
+                <Heart className="text-orange-500 mr-3" size={28} />
+                <h3 className="text-xl font-bold text-gray-800">Support Team</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {supportTeam.map((member, i) => (
                   <motion.div
                     key={member.name}
-                    className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
                     custom={i + teamMembers.length}
                     initial="hidden"
                     whileInView="visible"
@@ -222,11 +288,11 @@ const About = () => {
                     variants={memberVariants}
                   >
                     <div>
-                      <h4 className="font-semibold text-gray-800 text-lg">{member.name}</h4>
-                      <p className="text-orange-600 font-medium">{member.role}</p>
+                      <h4 className="font-semibold text-gray-800 text-base">{member.name}</h4>
+                      <p className="text-orange-600 font-medium text-sm">{member.role}</p>
                     </div>
                     <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">
-                      Helper
+                      Supporter
                     </div>
                   </motion.div>
                 ))}
