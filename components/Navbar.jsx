@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { assets, CartIcon } from "@/assets/assets";
+import Blog from 'nextjs'
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
@@ -109,6 +111,12 @@ const Navbar = ({ isPromoPage = false, className = "", hideText = false }) => {
                       labelIcon={<CartIcon />}
                       onClick={() => router.push("/cart")}
                     />
+                    <UserButton.Action
+                      label="Blog"
+                      labelIcon={<CartIcon />}
+                      onClick={() => router.push("/blog")}
+                    />
+
                     <UserButton.Action
                       label="My Orders"
                       labelIcon={<ShoppingBag />}

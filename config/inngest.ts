@@ -1,6 +1,18 @@
 import { Inngest } from "inngest";
 import connectDB from "./db";
-import User from "@/models/user";
+import mongoose, { Model, Document } from "mongoose";
+import UserJS from "@/models/user";
+
+interface IUser extends Document {
+  _id: string;
+  name: string;
+  email: string;
+  imageUrl: string;
+  cartItems?: Record<string, any>;
+}
+
+const User = UserJS as Model<IUser>;
+
 import Order from "@/models/Order";
 
 interface OrderItem {
@@ -33,11 +45,11 @@ export const syncUserCreation = inngest.createFunction(
     try {
       const { id, first_name, last_name, email_addresses, image_url } = event.data;
       const userData = {
-        _id: id,
-        email: email_addresses[0].email_address,
-        name: first_name + " " + last_name,
-        imageUrl: image_url
-      };
+  email: email_addresses[0].email_address,
+  name: first_name + " " + last_name,
+  imageUrl: image_url
+};
+
       
       await step.run('connect-to-db', async () => {
         await connectDB();
