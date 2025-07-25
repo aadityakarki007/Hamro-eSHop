@@ -3,7 +3,7 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ShieldCheck, CreditCard, Star, Truck, Headphones, DollarSign } from "lucide-react";
+import { ShieldCheck, CreditCard, Star, Truck, Headphones, DollarSign, Users, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 
 const cardVariants = {
@@ -12,6 +12,15 @@ const cardVariants = {
     opacity: 1,
     scale: 1,
     transition: { delay: i * 0.15, type: "spring", stiffness: 100 },
+  }),
+};
+
+const memberVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, type: "spring", stiffness: 100 },
   }),
 };
 
@@ -49,6 +58,20 @@ const About = () => {
     },
   ];
 
+  const teamMembers = [
+    { name: "Aaditya Karki", role: "CEO" },
+    { name: "Samyog Aryal", role: "Team Member" },
+    { name: "Rupak Bhattarai", role: "Team Member" },
+    { name: "Sulav Panthi", role: "Team Member" },
+    { name: "Kritish Bhandari", role: "Team Member" },
+    { name: "Kush Karki", role: "Team Member" },
+  ];
+
+  const supportTeam = [
+    { name: "Subhekshya Bhattarai", role: "Support" },
+    { name: "Dikshya Bogati", role: "Support" },
+  ];
+
   return (
     <>
       <Navbar />
@@ -67,10 +90,10 @@ const About = () => {
             Welcome to <span className="font-semibold text-orange-600">Hamro eShop</span> — an online marketplace where quality, affordability, and exceptional service come together.
           </p>
           <p>
-            Our platform is designed to simplify your shopping experience by connecting you with genuine products and ensuring seamless delivery. Whether you’re searching for electronics, fashion, or everyday essentials, we’ve got you covered.
+            Our platform is designed to simplify your shopping experience by connecting you with genuine products and ensuring seamless delivery. Whether you're searching for electronics, fashion, or everyday essentials, we've got you covered.
           </p>
           <p>
-            At Hamro eShop, we don’t just sell products — we are committed to serving you. Your satisfaction and trust are our highest priorities.
+            At Hamro eShop, we don't just sell products — we are committed to serving you. Your satisfaction and trust are our highest priorities.
           </p>
         </div>
 
@@ -137,6 +160,78 @@ const About = () => {
                 <p className="text-gray-600">{item.desc}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+
+        {/* Our Team Section */}
+        <div className="max-w-6xl mx-auto mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-orange-600 mb-4">Our Team</h2>
+            <div className="w-16 h-1 bg-orange-500 rounded-full mx-auto shadow-lg"></div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Team Members */}
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="flex items-center justify-center mb-6">
+                <Users className="text-orange-500 mr-3" size={32} />
+                <h3 className="text-2xl font-bold text-gray-800">Team Members</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {teamMembers.map((member, i) => (
+                  <motion.div
+                    key={member.name}
+                    className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    custom={i}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={memberVariants}
+                  >
+                    <div>
+                      <h4 className="font-semibold text-gray-800 text-lg">{member.name}</h4>
+                      <p className="text-orange-600 font-medium">{member.role}</p>
+                    </div>
+                    {member.role === "CEO" && (
+                      <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        Leader
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Support Team */}
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="flex items-center justify-center mb-6">
+                <Heart className="text-orange-500 mr-3" size={32} />
+                <h3 className="text-2xl font-bold text-gray-800">Support Team</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {supportTeam.map((member, i) => (
+                  <motion.div
+                    key={member.name}
+                    className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    custom={i + teamMembers.length}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={memberVariants}
+                  >
+                    <div>
+                      <h4 className="font-semibold text-gray-800 text-lg">{member.name}</h4>
+                      <p className="text-orange-600 font-medium">{member.role}</p>
+                    </div>
+                    <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">
+                      Helper
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
