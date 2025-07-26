@@ -101,43 +101,47 @@ const About = () => {
         <div className="max-w-5xl mx-auto mt-16">
           <h2 className="text-2xl font-bold text-center text-orange-600 mb-6">Why Choose Us?</h2>
 
-          {/* Mobile 3 rows layout */}
-          <div className="md:hidden space-y-8">
+          {/* Mobile layout - Square boxes */}
+          <div className="md:hidden space-y-6">
 
-            {/* First 4 cards: 2 columns grid */}
-            <div className="grid grid-cols-2 gap-6">
+            {/* First 4 cards: 2 columns grid with square aspect ratio */}
+            <div className="grid grid-cols-2 gap-4">
               {cards.slice(0, 4).map((item, i) => (
                 <motion.div
                   key={item.title}
-                  className="p-6 bg-white border border-gray-200 rounded-xl shadow hover:shadow-orange-200 transition cursor-pointer"
+                  className="aspect-square p-4 bg-white border border-gray-200 rounded-xl shadow hover:shadow-orange-200 transition cursor-pointer flex flex-col justify-center text-center"
                   custom={i}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.3 }}
                   variants={cardVariants}
                 >
-                  {item.icon}
-                  <h3 className="text-xl font-semibold mb-2 text-gray-700">{item.title}</h3>
-                  <p className="text-gray-600">{item.desc}</p>
+                  <div className="flex justify-center mb-2">
+                    {React.cloneElement(item.icon, { size: 32, className: "text-orange-500" })}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-700">{item.title}</h3>
+                  <p className="text-sm text-gray-600 leading-tight">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
 
-            {/* Last 2 cards: stacked vertically */}
-            <div className="space-y-6">
+            {/* Last 2 cards: 2 columns grid with square aspect ratio */}
+            <div className="grid grid-cols-2 gap-4">
               {cards.slice(4, 6).map((item, i) => (
                 <motion.div
                   key={item.title}
-                  className="p-6 bg-white border border-gray-200 rounded-xl shadow hover:shadow-orange-200 transition cursor-pointer"
+                  className="aspect-square p-4 bg-white border border-gray-200 rounded-xl shadow hover:shadow-orange-200 transition cursor-pointer flex flex-col justify-center text-center"
                   custom={i + 4}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.3 }}
                   variants={cardVariants}
                 >
-                  {item.icon}
-                  <h3 className="text-xl font-semibold mb-2 text-gray-700">{item.title}</h3>
-                  <p className="text-gray-600">{item.desc}</p>
+                  <div className="flex justify-center mb-2">
+                    {React.cloneElement(item.icon, { size: 32, className: "text-orange-500" })}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-700">{item.title}</h3>
+                  <p className="text-sm text-gray-600 leading-tight">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -170,20 +174,20 @@ const About = () => {
             <div className="w-16 h-1 bg-orange-500 rounded-full mx-auto shadow-lg"></div>
           </div>
 
-          {/* Mobile Layout - Side by Side */}
-          <div className="lg:hidden grid grid-cols-2 gap-4">
+          {/* Mobile Layout - Stacked Vertically */}
+          <div className="lg:hidden space-y-6">
             {/* Team Members - Mobile */}
-            <div className="bg-white rounded-xl shadow-lg p-4">
-              <div className="flex items-center justify-center mb-4">
-                <Users className="text-orange-500 mr-2" size={24} />
-                <h3 className="text-lg font-bold text-gray-800">Team Members</h3>
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-center mb-6">
+                <Users className="text-orange-500 mr-3" size={24} />
+                <h3 className="text-xl font-bold text-gray-800">Team Members</h3>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {teamMembers.map((member, i) => (
                   <motion.div
                     key={member.name}
-                    className="p-2 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
                     custom={i}
                     initial="hidden"
                     whileInView="visible"
@@ -191,11 +195,11 @@ const About = () => {
                     variants={memberVariants}
                   >
                     <div>
-                      <h4 className="font-semibold text-gray-800 text-sm">{member.name}</h4>
-                      <p className="text-orange-600 font-medium text-xs">{member.role}</p>
+                      <h4 className="font-semibold text-gray-800 text-base">{member.name}</h4>
+                      <p className="text-orange-600 font-medium text-sm">{member.role}</p>
                     </div>
                     {member.role === "CEO" && (
-                      <div className="bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium mt-1 inline-block">
+                      <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                         Leader
                       </div>
                     )}
@@ -205,17 +209,17 @@ const About = () => {
             </div>
 
             {/* Support Team - Mobile */}
-            <div className="bg-white rounded-xl shadow-lg p-4">
-              <div className="flex items-center justify-center mb-4">
-                <Heart className="text-orange-500 mr-2" size={24} />
-                <h3 className="text-lg font-bold text-gray-800">Support Team</h3>
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-center mb-6">
+                <Heart className="text-orange-500 mr-3" size={24} />
+                <h3 className="text-xl font-bold text-gray-800">Support Team</h3>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {supportTeam.map((member, i) => (
                   <motion.div
                     key={member.name}
-                    className="p-2 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
+                    className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-white rounded-lg border border-orange-100 hover:shadow-md transition-all duration-300"
                     custom={i + teamMembers.length}
                     initial="hidden"
                     whileInView="visible"
@@ -223,10 +227,10 @@ const About = () => {
                     variants={memberVariants}
                   >
                     <div>
-                      <h4 className="font-semibold text-gray-800 text-sm">{member.name}</h4>
-                      <p className="text-orange-600 font-medium text-xs">{member.role}</p>
+                      <h4 className="font-semibold text-gray-800 text-base">{member.name}</h4>
+                      <p className="text-orange-600 font-medium text-sm">{member.role}</p>
                     </div>
-                    <div className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium mt-1 inline-block">
+                    <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">
                       Supporter
                     </div>
                   </motion.div>
