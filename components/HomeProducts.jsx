@@ -169,7 +169,8 @@ const HomeProducts = () => {
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-0 sm:px-6 lg:px-8" aria-labelledby="popular-products-heading">
+    <section className="w-full w-screen px-1.5 sm:px-6 lg:px-8" aria-labelledby="popular-products-heading">
+
       <div className="flex flex-col items-center pt-8 sm:pt-12 lg:pt-16">
         {/* Enhanced Header */}
         <div className="w-full text-center mb-8 sm:mb-12">
@@ -184,7 +185,8 @@ const HomeProducts = () => {
         {/* Responsive Product Grid */}
         <div className="w-full">
           {/* Mobile and Tablet - 2-3 columns */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 pb-8 sm:pb-12 lg:hidden">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-0 sm:gap-4 pb-8 sm:pb-12 lg:hidden">
+
             {displayProducts.map((product, index) => (
               <ProductCardComponent key={product._id} product={product} index={index} />
             ))}
